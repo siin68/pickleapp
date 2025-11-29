@@ -1,0 +1,142 @@
+{
+  "landing": {
+    "title": "Find Your Perfect Meetup",
+    "subtitle": "Connect with people who share your hobbies",
+    "cta": "Get Started",
+    "login": "Login",
+    "features": {
+      "hobby": "Match by Hobbies",
+      "hobbyDesc": "Find people with similar interests",
+      "location": "Local Meetups",
+      "locationDesc": "Discover events near you",
+      "chat": "Easy Communication",
+      "chatDesc": "Chat with participants instantly"
+    }
+  },
+  "login": {
+    "title": "Welcome Back",
+    "subtitle": "Sign in to continue",
+    "googleLogin": "Continue with Google",
+    "terms": "By continuing, you agree to our Terms of Service and Privacy Policy"
+  },
+  "onboarding": {
+    "step": "Step {current} of {total}",
+    "next": "Next",
+    "back": "Back",
+    "finish": "Finish",
+    "profile": {
+      "title": "Tell us about yourself",
+      "name": "Full Name",
+      "age": "Age",
+      "gender": "Gender",
+      "male": "Male",
+      "female": "Female",
+      "other": "Other",
+      "bio": "Bio",
+      "bioPlaceholder": "Tell us a bit about yourself..."
+    },
+    "hobbies": {
+      "title": "What are your hobbies?",
+      "subtitle": "Select 3-8 hobbies you enjoy",
+      "selected": "{count} selected"
+    },
+    "locations": {
+      "title": "Where do you prefer to meet?",
+      "subtitle": "Choose 1-3 preferred areas",
+      "selected": "{count} selected"
+    }
+  },
+  "dashboard": {
+    "nav": {
+      "home": "Home",
+      "openInvites": "Open Invites",
+      "hobbyMatch": "Hobby Match",
+      "createInvite": "Create Invite",
+      "myEvents": "My Events",
+      "messages": "Messages",
+      "settings": "Settings"
+    },
+    "home": {
+      "welcome": "Welcome, {name}",
+      "actions": "Quick Actions",
+      "upcoming": "Upcoming Events"
+    },
+    "openInvites": {
+      "title": "Open Invites",
+      "filter": "Filter",
+      "noResults": "No open invites found"
+    },
+    "hobbyMatch": {
+      "title": "Match by Hobby",
+      "subtitle": "Find people with similar interests",
+      "viewProfile": "View Profile",
+      "sendInvite": "Send Invite"
+    },
+    "createInvite": {
+      "title": "Create New Event",
+      "eventTitle": "Event Title",
+      "description": "Description",
+      "hobby": "Hobby",
+      "location": "Location",
+      "date": "Date",
+      "time": "Time",
+      "maxParticipants": "Max Participants",
+      "publish": "Publish Event",
+      "cancel": "Cancel"
+    },
+    "myEvents": {
+      "title": "My Events",
+      "tabs": {
+        "created": "Created by Me",
+        "joined": "Joined",
+        "history": "History"
+      }
+    },
+    "messages": {
+      "title": "Messages",
+      "noChats": "No conversations yet"
+    },
+    "settings": {
+      "title": "Settings",
+      "profile": "Profile Settings",
+      "hobbies": "Update Hobbies",
+      "locations": "Preferred Locations",
+      "notifications": "Notifications",
+      "logout": "Logout"
+    }
+  },
+  "event": {
+    "details": "Event Details",
+    "host": "Host",
+    "hobby": "Hobby",
+    "location": "Location",
+    "when": "When",
+    "participants": "Participants ({current}/{max})",
+    "join": "Join Event",
+    "leave": "Leave Event",
+    "chat": "Go to Chat",
+    "full": "Event Full",
+    "closed": "Event Closed"
+  },
+  "profile": {
+    "hobbies": "Hobbies",
+    "locations": "Preferred Locations",
+    "events": "Events",
+    "sendMessage": "Send Message"
+  },
+  "chat": {
+    "typeMessage": "Type a message...",
+    "send": "Send",
+    "participants": "Participants"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "confirm": "Confirm",
+    "close": "Close"
+  }
+}
