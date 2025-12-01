@@ -136,10 +136,10 @@ export default function ProfileStep() {
                             flex-1 rounded-xl text-sm font-bold transition-all capitalize
                             ${formData.gender === gender 
                               ? 'bg-white text-gray-900 shadow-sm' 
-                              : 'text-gray-400 hover:text-gray-600'}
+                              : 'text-gray-400 hover:text-gray-600'}  
                           `}
                         >
-                          {gender === 'male' ? 'Him' : gender === 'female' ? 'Her' : 'Them'}
+                          {gender === 'male' ? 'Him' : gender === 'female' ? 'Her' : 'Other'}
                         </button>
                       ))}
                     </div>
