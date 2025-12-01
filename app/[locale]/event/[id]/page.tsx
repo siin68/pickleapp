@@ -2,7 +2,7 @@
 
 import { useParams, useRouter, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Card, Button, Avatar, Badge } from '@/components/ui';
+import { Card, CardContent, Button, Avatar, AvatarImage, AvatarFallback, Badge } from '@/components/ui';
 import { getEventById, getHobbyById, getLocationById, getUserById } from '@/lib/data';
 
 export default function EventDetailPage() {
@@ -19,7 +19,7 @@ export default function EventDetailPage() {
         <div className="text-center">
           <div className="text-6xl mb-4">🔍</div>
           <p className="text-gray-500">Event not found</p>
-          <Button onClick={() => router.push(`/${locale}/dashboard`)} className="mt-4">
+          <Button onClick={() => router.push(`/dashboard`)} className="mt-4">
             Back to Dashboard
           </Button>
         </div>
@@ -41,23 +41,27 @@ export default function EventDetailPage() {
         </Button>
 
         <Card className="mb-6">
-          <div className="flex justify-between items-start mb-4">
-            <h1 className="text-3xl font-extrabold text-gray-800">{event.title}</h1>
-            <Badge variant={event.status === 'open' ? 'success' : 'secondary'}>
-              {event.status}
-            </Badge>
-          </div>
+          <CardContent className="pt-6">
+            <div className="flex justify-between items-start mb-4">
+              <h1 className="text-3xl font-extrabold text-gray-800">{event.title}</h1>
+              <Badge variant={event.status === 'open' ? 'default' : 'secondary'}>
+                {event.status}
+              </Badge>
+            </div>
           <p className="text-gray-600 mb-6">{event.description}</p>
 
           <div className="grid grid-cols-2 gap-6">
             <div>
               <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2">{t('host')}</h3>
               <div className="flex items-center gap-3">
-                <Avatar src={host?.image} alt={host?.name || ''} />
+                <Avatar className="w-10 h-10">
+                  <AvatarImage src={host?.image} alt={host?.name || ''} />
+                  <AvatarFallback>{host?.name?.charAt(0)}</AvatarFallback>
+                </Avatar>
                 <div>
                   <div className="font-semibold text-gray-800">{host?.name}</div>
                   <button
-                    onClick={() => router.push(`/${locale}/profile/${host?.id}`)}
+                    onClick={() => router.push(`/profile/${host?.id}`)}
                     className="text-sm text-primary-600 hover:underline"
                   >
                     View profile
@@ -86,9 +90,11 @@ export default function EventDetailPage() {
               <div className="text-sm text-gray-600">{event.time}</div>
             </div>
           </div>
+          </CardContent>
         </Card>
 
         <Card className="mb-6">
+          <CardContent className="pt-6">
           <h3 className="text-xs font-semibold text-gray-500 uppercase mb-3">
             {t('participants', { current: event.currentParticipants.length, max: event.maxParticipants })}
           </h3>
@@ -98,10 +104,13 @@ export default function EventDetailPage() {
               return (
                 <div
                   key={participantId}
-                  onClick={() => router.push(`/${locale}/profile/${participantId}`)}
+                  onClick={() => router.push(`/profile/${participantId}`)}
                   className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition"
                 >
-                  <Avatar src={participant?.image} alt={participant?.name || ''} size="sm" />
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage src={participant?.image} alt={participant?.name || ''} />
+                    <AvatarFallback>{participant?.name?.charAt(0)}</AvatarFallback>
+                  </Avatar>
                   <span className="text-sm font-medium text-gray-700">{participant?.name}</span>
                 </div>
               );
@@ -110,6 +119,7 @@ export default function EventDetailPage() {
           {spotsLeft > 0 && (
             <p className="text-sm text-gray-500">{spotsLeft} spot{spotsLeft > 1 ? 's' : ''} available</p>
           )}
+          </CardContent>
         </Card>
 
         <div className="flex gap-3">

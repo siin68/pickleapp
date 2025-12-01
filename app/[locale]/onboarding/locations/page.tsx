@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Button, Card } from '@/components/ui';
+import { Button, Card, CardContent } from '@/components/ui';
 import { LOCATIONS } from '@/constants/locations';
 
 export default function LocationsStep() {
@@ -28,7 +28,7 @@ export default function LocationsStep() {
   const handleSubmit = () => {
     if (selectedLocations.length >= 1) {
       localStorage.setItem('onboarding-locations', JSON.stringify(selectedLocations));
-      router.push(`/${locale}/dashboard`);
+      router.push(`/dashboard`);
     }
   };
 
@@ -48,7 +48,8 @@ export default function LocationsStep() {
       </div>
 
       <Card className="mb-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <CardContent className="pt-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {LOCATIONS.map((location) => {
             const isSelected = selectedLocations.includes(location.id);
             return (
@@ -70,7 +71,8 @@ export default function LocationsStep() {
               </button>
             );
           })}
-        </div>
+          </div>
+        </CardContent>
       </Card>
 
       <div className="flex justify-between">

@@ -1,6 +1,6 @@
-export { default as Button } from './Button';
-export { default as Card } from './Card';
-export { default as Input } from './Input';
-export { default as TextArea } from './TextArea';
-export { default as Avatar } from './Avatar';
-export { default as Badge } from './Badge';
+export { Button } from './button';
+export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './card';
+export { Input } from './input';
+export { Textarea } from './textarea';
+export { Avatar, AvatarImage, AvatarFallback } from './avatar';
+export { Badge } from './badge';

@@ -9,7 +9,7 @@ export default function OnboardingPage() {
   const locale = pathname.split('/')[1] || 'en';
 
   useEffect(() => {
-    router.push(`/${locale}/onboarding/profile`);
+    router.push(`/onboarding/profile`);
   }, [router, locale]);
 
   return null;

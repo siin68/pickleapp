@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Button, Card } from '@/components/ui';
+import { Button, Card, CardContent } from '@/components/ui';
 import { HOBBIES } from '@/constants/hobbies';
 
 export default function HobbiesStep() {
@@ -28,7 +28,7 @@ export default function HobbiesStep() {
   const handleSubmit = () => {
     if (selectedHobbies.length >= 3) {
       localStorage.setItem('onboarding-hobbies', JSON.stringify(selectedHobbies));
-      router.push(`/${locale}/onboarding/locations`);
+      router.push(`/onboarding/locations`);
     }
   };
 
@@ -48,7 +48,8 @@ export default function HobbiesStep() {
       </div>
 
       <Card className="mb-6">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        <CardContent className="pt-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {HOBBIES.map((hobby) => {
             const isSelected = selectedHobbies.includes(hobby.id);
             return (
@@ -68,7 +69,8 @@ export default function HobbiesStep() {
               </button>
             );
           })}
-        </div>
+          </div>
+        </CardContent>
       </Card>
 
       <div className="flex justify-between">

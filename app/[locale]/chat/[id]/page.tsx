@@ -1,16 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { useParams, useRouter, usePathname } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { Button, Avatar } from '@/components/ui';
+import { Button, Avatar, AvatarImage, AvatarFallback } from '@/components/ui';
 import { getChatById, getEventById, getUserById, getMessagesByChatId } from '@/lib/data';
 
 export default function ChatPage() {
   const params = useParams();
   const router = useRouter();
-  const pathname = usePathname();
-  const locale = pathname.split('/')[1] || 'en';
   const t = useTranslations('chat');
   const [message, setMessage] = useState('');
   
@@ -21,7 +20,7 @@ export default function ChatPage() {
         <div className="text-center">
           <div className="text-6xl mb-4">💬</div>
           <p className="text-gray-500">Chat not found</p>
-          <Button onClick={() => router.push(`/${locale}/dashboard/messages`)} className="mt-4">
+          <Button onClick={() => router.push(`/dashboard/messages`)} className="mt-4">
             Back to Messages
           </Button>
         </div>
@@ -58,7 +57,7 @@ export default function ChatPage() {
             </div>
             <Button
               variant="outline"
-              onClick={() => router.push(`/${locale}/event/${event?.id}`)}
+              onClick={() => router.push(`/event/${event?.id}`)}
             >
               Event
             </Button>
@@ -79,7 +78,10 @@ export default function ChatPage() {
                 className={`flex gap-3 ${isCurrentUser ? 'flex-row-reverse' : ''}`}
               >
                 {!isCurrentUser && (
-                  <Avatar src={sender?.image} alt={sender?.name || ''} size="sm" />
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage src={sender?.image} alt={sender?.name || ''} />
+                    <AvatarFallback>{sender?.name?.charAt(0)}</AvatarFallback>
+                  </Avatar>
                 )}
                 <div className="max-w-md">
                   {!isCurrentUser && (

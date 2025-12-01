@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useRouter, usePathname } from 'next/navigation';
-import { Card, Avatar } from '@/components/ui';
+import { Card, CardContent, Avatar, AvatarImage, AvatarFallback } from '@/components/ui';
 import { MOCK_CHATS, MOCK_EVENTS, MOCK_MESSAGES } from '@/mock-data';
 import { getUserById, getEventById } from '@/lib/data';
 
@@ -39,11 +39,15 @@ export default function MessagesPage() {
               onClick={() => router.push(`/chat/${chat.id}`)}
               className="cursor-pointer hover:shadow-lg transition-all group"
             >
-              <div className="flex items-center gap-4">
-                <div className="relative">
-                  <Avatar src={otherParticipant?.image} alt={otherParticipant?.name || ''} size="lg" />
-                  <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
-                </div>
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-4">">
+                  <div className="relative">
+                    <Avatar className="w-12 h-12">
+                      <AvatarImage src={otherParticipant?.image} alt={otherParticipant?.name || ''} />
+                      <AvatarFallback>{otherParticipant?.name?.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                  </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-start mb-1">
                     <h3 className="font-bold text-gray-800 group-hover:text-primary-600 transition">{event?.title}</h3>
@@ -59,6 +63,7 @@ export default function MessagesPage() {
                   </p>
                 </div>
               </div>
+              </CardContent>
             </Card>
           );
         })}

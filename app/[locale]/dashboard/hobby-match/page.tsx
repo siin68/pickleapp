@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter, usePathname } from 'next/navigation';
-import { Card, Avatar, Badge, Button } from '@/components/ui';
+import { Card, CardContent, Avatar, AvatarImage, AvatarFallback, Badge, Button } from '@/components/ui';
 import { MOCK_USERS } from '@/mock-data';
 import { getHobbyById } from '@/lib/data';
 
@@ -28,11 +28,15 @@ export default function HobbyMatchPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {matchedUsers.map((user) => (
           <Card key={user.id} className="hover:shadow-lg transition-shadow">
-            <div className="flex flex-col items-center text-center">
-              <div className="relative">
-                <Avatar src={user.image} alt={user.name} size="xl" />
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white"></div>
-              </div>
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center text-center">
+                <div className="relative">
+                  <Avatar className="w-20 h-20">
+                    <AvatarImage src={user.image} alt={user.name} />
+                    <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white"></div>
+                </div>
               <h3 className="text-lg font-bold mt-3 text-gray-800">{user.name}</h3>
               <p className="text-gray-500 text-xs mt-0.5">
                 {user.age} • {user.gender}
@@ -57,13 +61,14 @@ export default function HobbyMatchPage() {
                 <Button
                   variant="outline"
                   className="flex-1"
-                  onClick={() => router.push(`/${locale}/profile/${user.id}`)}
+                  onClick={() => router.push(`/profile/${user.id}`)}
                 >
                   👀 {t('viewProfile')}
                 </Button>
                 <Button className="flex-1">💌 {t('sendInvite')}</Button>
               </div>
-            </div>
+              </div>
+            </CardContent>
           </Card>
         ))}
       </div>

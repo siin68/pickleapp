@@ -1,15 +1,14 @@
 'use client';
 
-import { useParams, useRouter, usePathname } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { Card, Button, Avatar } from '@/components/ui';
+import { Card, CardContent, Button, Avatar, AvatarImage, AvatarFallback } from '@/components/ui';
 import { getUserById, getHobbyById, getLocationById, getEventsByUserId } from '@/lib/data';
 
 export default function ProfilePage() {
   const params = useParams();
   const router = useRouter();
-  const pathname = usePathname();
-  const locale = pathname.split('/')[1] || 'en';
   const t = useTranslations('profile');
   
   const user = getUserById(params.id as string);
@@ -19,7 +18,7 @@ export default function ProfilePage() {
         <div className="text-center">
           <div className="text-6xl mb-4">👤</div>
           <p className="text-gray-500">User not found</p>
-          <Button onClick={() => router.push(`/${locale}/dashboard`)} className="mt-4">
+          <Button onClick={() => router.push(`/dashboard`)} className="mt-4">
             Back to Dashboard
           </Button>
         </div>
@@ -37,11 +36,15 @@ export default function ProfilePage() {
         </Button>
 
         <Card className="mb-6">
-          <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
-            <div className="relative">
-              <Avatar src={user.image} alt={user.name} size="xl" />
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white"></div>
-            </div>
+          <CardContent className="pt-6">
+            <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
+              <div className="relative">
+                <Avatar className="w-24 h-24">
+                  <AvatarImage src={user.image} alt={user.name} />
+                  <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white"></div>
+              </div>
             <div className="flex-1 text-center md:text-left">
               <h1 className="text-3xl font-extrabold text-gray-800 mb-2">{user.name}</h1>
               <p className="text-gray-600 mb-4">
@@ -53,9 +56,11 @@ export default function ProfilePage() {
               </Button>
             </div>
           </div>
+          </CardContent>
         </Card>
 
         <Card className="mb-6">
+          <CardContent className="pt-6">
           <h2 className="text-xl font-bold mb-4 bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent">
             {t('hobbies')}
           </h2>
@@ -69,9 +74,11 @@ export default function ProfilePage() {
               );
             })}
           </div>
+          </CardContent>
         </Card>
 
         <Card className="mb-6">
+          <CardContent className="pt-6">
           <h2 className="text-xl font-bold mb-4 bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent">
             {t('locations')}
           </h2>
@@ -85,9 +92,11 @@ export default function ProfilePage() {
               );
             })}
           </div>
+          </CardContent>
         </Card>
 
         <Card>
+          <CardContent className="pt-6">
           <h2 className="text-xl font-bold mb-4 bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent">
             {t('events')}
           </h2>
@@ -100,7 +109,7 @@ export default function ProfilePage() {
                   <div
                     key={event.id}
                     className="p-4 rounded-xl cursor-pointer transition group bg-white/60 backdrop-blur hover:shadow-md border border-pink-100 hover:border-primary-300"
-                    onClick={() => router.push(`/${locale}/event/${event.id}`)}
+                    onClick={() => router.push(`/event/${event.id}`)}
                   >
                     <h3 className="font-semibold text-gray-800 group-hover:text-primary-600 transition">
                       {event.title}
@@ -123,6 +132,7 @@ export default function ProfilePage() {
           ) : (
             <p className="text-gray-500 text-center py-8">No events yet</p>
           )}
+          </CardContent>
         </Card>
       </div>
     </div>
