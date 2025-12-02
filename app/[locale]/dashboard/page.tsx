@@ -194,7 +194,6 @@ export default function DashboardHome() {
           `/api/events?type=recommended&userId=${session.user.id}&limit=3`
         );
         const eventsData = await eventsRes.json();
-        console.log("eventsData: ", eventsData);
 
         const statsRes = await fetch(
           `/api/events/stats?userId=${session.user.id}`

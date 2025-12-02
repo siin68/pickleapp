@@ -479,7 +479,6 @@ export default function HobbyMatchPage() {
           </div>
         ) : (
           <>
-            {/* Next Card (Background Placeholder) */}
             {nextUser && (
               <div className="absolute inset-0 top-3 sm:top-4 scale-95 opacity-50 bg-white rounded-[1.75rem] sm:rounded-[2rem] border border-gray-200 shadow-xl overflow-hidden pointer-events-none">
                 <div className="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400">
@@ -498,7 +497,6 @@ export default function HobbyMatchPage() {
               </div>
             )}
 
-            {/* Current Card (Draggable) */}
             {currentUser ? (
               <div
                 ref={cardRef}
