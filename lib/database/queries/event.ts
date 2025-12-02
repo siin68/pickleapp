@@ -191,10 +191,8 @@ export const eventQueries = {
     hobbyId: string;
     locationId: string;
     date: Date;
-    duration?: number;
     maxParticipants?: number;
     minParticipants?: number;
-    price?: number;
     isPrivate?: boolean;
     requiresApproval?: boolean;
     status?: string;

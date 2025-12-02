@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
       events = await eventQueries.searchEvents("", {}, limit);
     }
 
-    const eventsWithStats = events.map((event) => {
+    const eventsWithStats = events.map((event ) => {
       const stats = EventService.calculateEventStats(event as any);
       return {
         ...event,
@@ -55,10 +55,8 @@ export async function POST(request: NextRequest) {
       hobbyId,
       locationId,
       date,
-      duration,
       maxParticipants = 10,
       minParticipants = 2,
-      price = 0,
       isPrivate = false,
       requiresApproval = false,
     } = body;
@@ -113,10 +111,8 @@ export async function POST(request: NextRequest) {
       hobbyId,
       locationId,
       date: eventDate,
-      duration: duration ? parseInt(duration.toString()) : undefined,
       maxParticipants: parseInt(maxParticipants.toString()),
       minParticipants: parseInt(minParticipants.toString()),
-      price: parseFloat(price.toString()),
       isPrivate,
       requiresApproval,
       status: "OPEN",

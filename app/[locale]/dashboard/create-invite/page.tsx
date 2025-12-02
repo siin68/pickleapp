@@ -112,7 +112,6 @@ export default function CreateInvitePage() {
     locationId: "",
     date: "",
     time: "",
-    duration: "120",
     maxParticipants: "8",
   });
 
@@ -252,13 +251,11 @@ export default function CreateInvitePage() {
         description: formData.description,
         image: formData.image || undefined,
         hostId: user.id,
-        hobbyIds: formData.hobbyIds, // Sending array
+        hobbyIds: formData.hobbyIds, 
         locationId: formData.locationId,
         date: `${formData.date}T${formData.time}:00.000Z`,
-        duration: parseInt(formData.duration),
         maxParticipants: parseInt(formData.maxParticipants),
         minParticipants: 2,
-        price: 0,
         isPrivate: false,
         requiresApproval: false,
       };
@@ -490,16 +487,6 @@ export default function CreateInvitePage() {
 
                     {/* Capacity Row */}
                     <div className="grid grid-cols-2 gap-3">
-                       <div className="space-y-1">
-                        <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wider ml-1">Duration (min)</label>
-                        <Input
-                          type="number"
-                          value={formData.duration}
-                          onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                          min="30" step="15"
-                          className="h-9 rounded-lg border-transparent bg-white shadow-sm font-medium text-xs focus:border-rose-400 focus:ring-rose-200"
-                        />
-                       </div>
                        <div className="space-y-1">
                         <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wider ml-1">Max People</label>
                         <Input
