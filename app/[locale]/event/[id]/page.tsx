@@ -32,19 +32,9 @@ interface Event {
   _count?: { participants: number };
 }
 
-// Icons
-const ArrowLeftIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-);
-const CalendarIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-);
-const MapPinIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-);
-const MessageIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
-);
+import { ArrowLeftIcon, CalendarIcon, MapPinIcon, MessageCircleIcon } from "@/icons/icons";
+
+const MessageIcon = MessageCircleIcon;
 
 export default function EventDetailPage() {
   const params = useParams();
@@ -232,7 +222,6 @@ export default function EventDetailPage() {
 
       <div className="max-w-3xl mx-auto px-4 space-y-6">
         
-        {/* Hero Card */}
         <div className="relative rounded-[2.5rem] overflow-hidden bg-white shadow-xl shadow-purple-100/50 group transform transition-all hover:scale-[1.01]">
            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-rose-500 opacity-90 transition-opacity group-hover:opacity-100" />
            <div className="absolute -bottom-10 -right-10 text-[12rem] opacity-20 rotate-12">{hobby?.icon}</div>
@@ -258,20 +247,17 @@ export default function EventDetailPage() {
                     </div>
                     <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/10">
                        <MapPinIcon className="w-4 h-4" />
-                       {location?.name}, {location?.city}
+                       {location?.name}, {location?.city?.name || location?.city}
                     </div>
                  </div>
               </div>
            </div>
         </div>
 
-        {/* Content Grid */}
         <div className="grid md:grid-cols-3 gap-6">
            
-           {/* Left: Details */}
            <div className="md:col-span-2 space-y-6">
               
-              {/* Host Card */}
               <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 border border-white shadow-sm flex items-center justify-between">
                  <div className="flex items-center gap-4">
                     <div className="relative">
@@ -293,14 +279,12 @@ export default function EventDetailPage() {
                  </Button>
               </div>
 
-              {/* Description */}
               <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 border border-white shadow-sm space-y-4">
                  <h3 className="font-bold text-gray-900 text-lg">About this Event</h3>
                  <p className="text-gray-600 leading-relaxed text-base">
                     {event.description}
                  </p>
                  <div className="pt-4 flex flex-wrap gap-2">
-                    {/* Mock Tags for vibe */}
                     {['Friendly', 'Casual', 'Beginners Welcome', 'English'].map(tag => (
                        <span key={tag} className="px-3 py-1 rounded-full bg-gray-100 text-xs font-bold text-gray-500 border border-gray-200">
                           #{tag}
@@ -311,7 +295,6 @@ export default function EventDetailPage() {
 
            </div>
 
-           {/* Right: Squad */}
            <div className="md:col-span-1">
               <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 border border-white shadow-sm h-full">
                  <div className="flex justify-between items-center mb-6">
@@ -352,7 +335,6 @@ export default function EventDetailPage() {
 
       </div>
 
-      {/* Floating Action Dock (Sticky Bottom) */}
       <div className="fixed bottom-8 inset-x-0 px-4 z-40 flex justify-center">
          <div className="bg-gray-900/95 backdrop-blur-xl p-2 pl-3 rounded-[2rem] shadow-2xl shadow-purple-500/20 flex items-center gap-3 max-w-md w-full border border-white/10 ring-1 ring-black/5">
             <Button 

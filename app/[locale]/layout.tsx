@@ -11,8 +11,11 @@ import '../globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'Dating Meetup App',
-  description: 'Connect with people who share your hobbies',
+  title: 'Pickle Match',
+  description: 'Find friends and dates through shared hobbies and location-based meetups',
+  icons: {
+    icon: '/assets/images/pickle-match.webp',
+  },
 };
 
 export default async function RootLayout({

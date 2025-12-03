@@ -111,7 +111,6 @@ export default function EditProfilePage() {
       
       setFormData({ ...formData, image: cloudinaryUrl });
       
-      toast.success('✅ Image uploaded!');
       
     } catch (error) {
       console.error('Failed to upload image:', error);

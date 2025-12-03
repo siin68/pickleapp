@@ -101,7 +101,6 @@ export default function HobbiesStep() {
             <div className="h-4 bg-gray-200 rounded w-48 mx-auto animate-pulse"></div>
           </div>
 
-          {/* Main Content Skeleton */}
           <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-xl shadow-rose-100/50 border border-white/60 p-8">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               {[...Array(12)].map((_, i) => (
