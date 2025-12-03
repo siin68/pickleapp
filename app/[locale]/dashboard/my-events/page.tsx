@@ -112,7 +112,7 @@ export default function MyEventsPage() {
   const t = useTranslations("dashboard.myEvents");
   const router = useRouter();
   const { data: session } = useSession();
-  const [activeTab, setActiveTab] = useState<"created" | "joined" | "history">(
+  const [activeTab, setActiveTab] = useState<"created" | "joined" >(
     "created"
   );
 
@@ -165,7 +165,6 @@ export default function MyEventsPage() {
   const tabs = [
     { id: "created", label: t("tabs.created"), icon: "✨" },
     { id: "joined", label: t("tabs.joined"), icon: "🎟️" },
-    { id: "history", label: t("tabs.history"), icon: "📜" },
   ] as const;
 
   return (

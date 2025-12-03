@@ -324,18 +324,7 @@ export default function EventDetailPage() {
       <div className="fixed bottom-0 inset-x-0 p-6 z-50 flex justify-center pointer-events-none">
         <div className="bg-gray-900/90 backdrop-blur-xl border border-white/10 rounded-[2rem] p-2 pl-3 shadow-2xl shadow-indigo-500/20 w-full max-w-md flex items-center gap-3 pointer-events-auto transform transition-all hover:scale-[1.02]">
            
-           {/* Message Button */}
-           <Button 
-             variant="ghost"
-             size="icon"
-             onClick={() => router.push(`/dashboard/chat/${event.id}`)}
-             className="w-12 h-12 rounded-full bg-white/10 text-white hover:bg-white/20 border border-white/5"
-             title="Event Chat"
-           >
-             <MessageCircle className="w-6 h-6" />
-           </Button>
-
-           {/* Main CTA */}
+         
            {isParticipant ? (
              <Button 
                 className="flex-1 h-12 rounded-full bg-green-500 hover:bg-green-600 text-white font-bold text-base shadow-lg shadow-green-500/20"

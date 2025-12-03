@@ -234,11 +234,25 @@ export default function CreateInvitePage() {
   const toggleHobby = (id: string) => {
     setFormData((prev) => {
       const exists = prev.hobbyIds.includes(id);
+      
+      // If deselecting, allow it
+      if (exists) {
+        return {
+          ...prev,
+          hobbyIds: prev.hobbyIds.filter(hId => hId !== id)
+        };
+      }
+      
+      // If selecting and already at max (3), don't allow
+      if (prev.hobbyIds.length >= 3) {
+        alert("You can select a maximum of 3 hobbies");
+        return prev;
+      }
+      
+      // Otherwise, add the new hobby
       return {
         ...prev,
-        hobbyIds: exists 
-          ? prev.hobbyIds.filter(hId => hId !== id) 
-          : [...prev.hobbyIds, id]
+        hobbyIds: [...prev.hobbyIds, id]
       };
     });
   };
@@ -377,23 +391,28 @@ export default function CreateInvitePage() {
                       What&apos;s the vibe?
                     </h3>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-rose-400 bg-rose-50 px-2 py-0.5 rounded-full">
-                      Multi-select
+                      Max 3
                     </span>
                   </div>
                   
                   <div className="flex flex-wrap gap-2">
                     {hobbies.map((hobby) => {
                       const isSelected = formData.hobbyIds?.includes(hobby.id);
+                      const isDisabled = !isSelected && formData.hobbyIds.length >= 3;
+                      
                       return (
                         <button
                           key={hobby.id}
                           type="button"
                           onClick={() => toggleHobby(hobby.id)}
+                          disabled={isDisabled}
                           className={`
                             group relative flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all duration-300
                             ${isSelected 
                               ? "bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-md shadow-rose-200 scale-105" 
-                              : "bg-gray-50 text-gray-600 hover:bg-white hover:shadow-sm hover:text-gray-900"
+                              : isDisabled
+                                ? "bg-gray-100 text-gray-300 cursor-not-allowed"
+                                : "bg-gray-50 text-gray-600 hover:bg-white hover:shadow-sm hover:text-gray-900"
                             }
                           `}
                         >
@@ -410,7 +429,12 @@ export default function CreateInvitePage() {
                     })}
                   </div>
                   {(!formData.hobbyIds || formData.hobbyIds.length === 0) && (
-                    <p className="mt-3 text-xs text-gray-400 italic">Select at least one interest to help find your match.</p>
+                    <p className="mt-3 text-xs text-gray-400 italic">Select up to 3 interests to help find your match.</p>
+                  )}
+                  {formData.hobbyIds && formData.hobbyIds.length > 0 && (
+                    <p className="mt-3 text-xs text-rose-500 font-medium">
+                      {formData.hobbyIds.length} of 3 selected
+                    </p>
                   )}
                 </CardContent>
               </Card>
