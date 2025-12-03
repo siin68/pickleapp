@@ -84,6 +84,7 @@ export default function ProfileStep() {
   const [imagePreview, setImagePreview] = useState("");
   const [checkingOnboarding, setCheckingOnboarding] = useState(true);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     async function checkOnboardingStatus() {
@@ -136,7 +137,6 @@ export default function ProfileStep() {
       <div className="min-h-screen bg-[#FAFAFA] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-xl mx-auto w-full text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Checking profile status...</p>
         </div>
       </div>
     );
@@ -146,15 +146,11 @@ export default function ProfileStep() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      alert('Please select an image file');
+    if (!file.type.startsWith("image/")) {
       return;
     }
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('Image size should be less than 5MB');
       return;
     }
 
@@ -167,38 +163,66 @@ export default function ProfileStep() {
       };
       reader.readAsDataURL(file);
 
-      // Upload to Cloudinary using client-side upload
       const imageUrl = await uploadToCloudinaryClient(file);
-      
-      // Update form data with the uploaded image URL
+
       setFormData((prev) => ({ ...prev, image: imageUrl }));
       setImagePreview(imageUrl);
-      
     } catch (error) {
       console.error("Error uploading image:", error);
-      alert("Failed to upload image. Please try again.");
-      
-      // Reset to previous state if upload fails
+
       setImagePreview(formData.image);
     } finally {
       setUploadingImage(false);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem("onboarding-profile", JSON.stringify(formData));
-    router.push(`/onboarding/hobbies`);
+    
+    if (!session?.user?.id) {
+      console.error('No user session');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      localStorage.setItem("onboarding-profile", JSON.stringify(formData));
+      
+      const response = await fetch("/api/auth/update-profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: session.user.id,
+          name: formData.name,
+          age: parseInt(formData.age) || null,
+          gender: formData.gender.toUpperCase(),
+          bio: formData.bio,
+          image: formData.image,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update profile');
+      }
+
+      console.log('Profile updated successfully');
+      router.push(`/onboarding/hobbies`);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      router.push(`/onboarding/hobbies`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Background Elements */}
       <div className="fixed top-[-10%] right-[-10%] w-[500px] h-[500px] bg-rose-100/50 rounded-full blur-[100px] -z-10" />
       <div className="fixed bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-100/50 rounded-full blur-[100px] -z-10" />
 
       <div className="max-w-xl mx-auto w-full relative z-10">
-        {/* Progress Header */}
         <div className="mb-10 text-center space-y-4">
           <div className="flex items-center justify-center gap-2 mb-6">
             <div className="h-2 w-12 rounded-full bg-gradient-to-r from-rose-500 to-purple-600"></div>
@@ -215,7 +239,6 @@ export default function ProfileStep() {
 
         <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-xl shadow-purple-50/50 p-8 md:p-10 border border-white">
           <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Avatar Upload */}
             <div className="flex flex-col items-center">
               <div className="relative group cursor-pointer">
                 <div className="absolute inset-0 bg-gradient-to-tr from-rose-400 to-purple-500 rounded-full blur-lg opacity-40 group-hover:opacity-60 transition-opacity"></div>
@@ -342,10 +365,20 @@ export default function ProfileStep() {
 
             <Button
               type="submit"
-              className="w-full h-14 rounded-2xl bg-gray-900 hover:bg-black text-white text-lg font-bold shadow-xl shadow-gray-200 hover:shadow-2xl hover:-translate-y-1 transition-all flex items-center justify-center gap-2 group"
+              disabled={isSubmitting || uploadingImage}
+              className="w-full h-14 rounded-2xl bg-gray-900 hover:bg-black text-white text-lg font-bold shadow-xl shadow-gray-200 hover:shadow-2xl hover:-translate-y-1 transition-all flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-              {tCommon("next")}
-              <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              {isSubmitting ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Saving...
+                </>
+              ) : (
+                <>
+                  {tCommon("next")}
+                  <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
             </Button>
           </form>
         </div>
