@@ -155,8 +155,6 @@ export default function MyEventsPage() {
         return createdEvents;
       case "joined":
         return joinedEvents;
-      case "history":
-        return historyEvents;
       default:
         return [];
     }

@@ -293,6 +293,42 @@ export default function HobbyMatchPage() {
 
   const triggerSwipe = (direction: "left" | "right") => {
     setFlyAway(direction);
+    
+    // Send swipe action to backend
+    if (currentUser && session?.user?.id) {
+      const action = direction === "right" ? "LIKE" : "NOPE";
+      
+      fetch("/api/swipe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: session.user.id,
+          targetId: currentUser.id,
+          action,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            console.log("Swipe recorded:", data.data);
+            
+            // If it's a match, show notification or modal
+            if (data.data.isMatch) {
+              console.log("🎉 It's a match!", data.data.friendship);
+              // TODO: Show match modal/notification
+              // You can add a toast notification here
+            }
+          } else {
+            console.error("Swipe failed:", data.error);
+          }
+        })
+        .catch((error) => {
+          console.error("Error sending swipe:", error);
+        });
+    }
+    
     setTimeout(() => {
       setCurrentIndex((prev) => prev + 1);
     }, 300);

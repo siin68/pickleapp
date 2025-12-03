@@ -1,0 +1,184 @@
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get("userId");
+
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: "userId parameter is required" },
+        { status: 400 }
+      );
+    }
+
+    // Get all friendships for the user
+    const friendships = await prisma.friendship.findMany({
+      where: {
+        OR: [
+          { user1Id: userId },
+          { user2Id: userId },
+        ],
+      },
+      include: {
+        user1: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            bio: true,
+            lastActive: true,
+            hobbies: {
+              include: {
+                hobby: {
+                  select: {
+                    id: true,
+                    name: true,
+                    nameVi: true,
+                    icon: true,
+                  },
+                },
+              },
+            },
+            locations: {
+              include: {
+                location: {
+                  select: {
+                    id: true,
+                    name: true,
+                    nameVi: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        user2: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            bio: true,
+            lastActive: true,
+            hobbies: {
+              include: {
+                hobby: {
+                  select: {
+                    id: true,
+                    name: true,
+                    nameVi: true,
+                    icon: true,
+                  },
+                },
+              },
+            },
+            locations: {
+              include: {
+                location: {
+                  select: {
+                    id: true,
+                    name: true,
+                    nameVi: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    // Map friendships to return the friend (not the current user)
+    const friends = friendships.map((friendship) => {
+      const friend = friendship.user1Id === userId ? friendship.user2 : friendship.user1;
+      
+      return {
+        friendshipId: friendship.id,
+        createdAt: friendship.createdAt,
+        friend: {
+          ...friend,
+        },
+      };
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: friends,
+      count: friends.length,
+    });
+  } catch (error) {
+    console.error("Error fetching mutual matches:", error);
+    console.error("Error details:", JSON.stringify(error, null, 2));
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: "Failed to fetch mutual matches",
+        details: error instanceof Error ? error.message : "Unknown error"
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE endpoint to remove a friendship (unmatch)
+export async function DELETE(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { userId, friendId } = body;
+
+    if (!userId || !friendId) {
+      return NextResponse.json(
+        { success: false, error: "Missing userId or friendId" },
+        { status: 400 }
+      );
+    }
+
+    // Find and delete the friendship
+    const friendship = await prisma.friendship.findFirst({
+      where: {
+        OR: [
+          { user1Id: userId, user2Id: friendId },
+          { user1Id: friendId, user2Id: userId },
+        ],
+      },
+    });
+
+    if (!friendship) {
+      return NextResponse.json(
+        { success: false, error: "Friendship not found" },
+        { status: 404 }
+      );
+    }
+
+    await prisma.friendship.delete({
+      where: { id: friendship.id },
+    });
+
+    // Optionally, also delete the swipe records
+    await Promise.all([
+      prisma.swipe.deleteMany({
+        where: {
+          OR: [
+            { userId, targetId: friendId },
+            { userId: friendId, targetId: userId },
+          ],
+        },
+      }),
+    ]);
+
+    return NextResponse.json({
+      success: true,
+      message: "Friendship removed successfully",
+    });
+  } catch (error) {
+    console.error("Error removing friendship:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to remove friendship" },
+      { status: 500 }
+    );
+  }
+}
