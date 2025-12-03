@@ -12,7 +12,7 @@ import {
   AvatarImage,
   AvatarFallback,
 } from "@/components/ui";
-import { uploadToCloudinaryClient } from "@/lib/cloudinary";
+// import { uploadToCloudinaryClient } from "@/lib/cloudinary";
 
 // Icons
 const CameraIcon = ({ className }: { className?: string }) => (
@@ -168,11 +168,11 @@ export default function ProfileStep() {
       reader.readAsDataURL(file);
 
       // Upload to Cloudinary using client-side upload
-      const imageUrl = await uploadToCloudinaryClient(file);
+      // const imageUrl = await uploadToCloudinaryClient(file);
       
       // Update form data with the uploaded image URL
-      setFormData((prev) => ({ ...prev, image: imageUrl }));
-      setImagePreview(imageUrl);
+      // setFormData((prev) => ({ ...prev, image: imageUrl }));
+      // setImagePreview(imageUrl);
       
     } catch (error) {
       console.error("Error uploading image:", error);

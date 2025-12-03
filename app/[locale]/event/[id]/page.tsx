@@ -258,7 +258,7 @@ export default function EventDetailPage() {
                     </div>
                     <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-sm border border-white/10">
                        <MapPinIcon className="w-4 h-4" />
-                       {location?.name}, {location?.city}
+                       {location?.name}, {location?.city?.name || location?.city}
                     </div>
                  </div>
               </div>
