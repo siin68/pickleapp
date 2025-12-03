@@ -461,21 +461,29 @@ export default function CreateInvitePage() {
                     </div>
 
                     {/* Capacity Row */}
-                    <div className="grid grid-cols-2 gap-3">
-                       <div className="space-y-1">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
                         <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wider ml-1">Max People</label>
-                        <Input
-                          type="number"
-                          value={formData.maxParticipants}
-                          onChange={(e) => setFormData({ ...formData, maxParticipants: e.target.value })}
-                          min="2" max="100"
-                          className="h-9 rounded-lg border-transparent bg-white shadow-sm font-medium text-xs focus:border-rose-400 focus:ring-rose-200"
-                        />
-                       </div>
+                        <span className="text-sm font-bold text-rose-500 bg-rose-50 px-2.5 py-0.5 rounded-lg">{formData.maxParticipants}</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="2"
+                        max="100"
+                        value={formData.maxParticipants}
+                        onChange={(e) => setFormData({ ...formData, maxParticipants: e.target.value })}
+                        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-rose-500 hover:accent-rose-600 transition-all [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-rose-500 [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:hover:bg-rose-600 [&::-webkit-slider-thumb]:hover:scale-110 [&::-webkit-slider-thumb]:transition-all"
+                      />
+                      <div className="flex justify-between text-[8px] text-gray-400 font-medium px-1">
+                        <span>2</span>
+                        <span>25</span>
+                        <span>50</span>
+                        <span>75</span>
+                        <span>100</span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Actions */}
                   <div className="flex gap-3 pt-1">
                     <Button
                       type="button"
