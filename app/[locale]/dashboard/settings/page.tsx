@@ -95,7 +95,7 @@ export default function SettingsPage() {
   const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname();
-  const locale = pathname.split('/')[1] || 'en';
+  const locale = (pathname ? pathname.split('/')[1] : '') || 'en';
 
   // State for user profile from API
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -142,6 +142,7 @@ export default function SettingsPage() {
 
   const toggleLanguage = () => {
     const newLocale = locale === 'en' ? 'vi' : 'en';
+    if (!pathname) return;
     const newPath = pathname.replace(`/${locale}/`, `/${newLocale}/`);
     router.push(newPath);
   };
