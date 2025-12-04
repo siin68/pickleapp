@@ -4,6 +4,8 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui';
 import { SparklesIcon, HeartFilledIcon, MapIcon, MessageSquareIcon, CheckIcon } from '@/icons/icons';
+import { useSession } from 'next-auth/react';
+import { useRouter } from '@/i18n/navigation';
 
 // Rename for consistency
 const SparkleIcon = SparklesIcon;
@@ -12,6 +14,8 @@ const ChatIcon = MessageSquareIcon;
 
 export default function LandingPage() {
   const t = useTranslations('landing');
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
   // Decorative tags for the hero animation
   const tags = ['Coffee ☕', 'Hiking 🌲', 'Gaming 🎮', 'Art 🎨', 'Music 🎵', 'Yoga 🧘‍♀️', 'Tech 💻', 'Foodie 🍔'];
@@ -43,11 +47,20 @@ export default function LandingPage() {
               <a href="#safety" className="hover:text-rose-500 transition-colors">Safety</a>
             </nav>
 
-            <Link href="/login">
-              <Button className="rounded-full bg-gray-900 text-white hover:bg-gray-800 px-6 font-bold shadow-lg shadow-gray-200/50 transition-all hover:scale-105 active:scale-95">
-                {t('login')}
+            {session ? (
+              <Button 
+                onClick={() => router.push('/dashboard')}
+                className="rounded-full bg-gradient-to-r from-rose-500 to-purple-600 text-white hover:from-rose-600 hover:to-purple-700 px-6 font-bold shadow-lg shadow-rose-200/50 transition-all hover:scale-105 active:scale-95"
+              >
+                Open App
               </Button>
-            </Link>
+            ) : (
+              <Link href="/login">
+                <Button className="rounded-full bg-gray-900 text-white hover:bg-gray-800 px-6 font-bold shadow-lg shadow-gray-200/50 transition-all hover:scale-105 active:scale-95">
+                  {t('login')}
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </header>
@@ -73,11 +86,21 @@ export default function LandingPage() {
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
-              <Link href="/login">
-                <Button size="lg" className="h-14 px-8 rounded-full text-lg bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 shadow-xl shadow-rose-200 hover:shadow-rose-300 transition-all hover:-translate-y-1">
-                  {t('cta')}
+              {session ? (
+                <Button 
+                  size="lg" 
+                  onClick={() => router.push('/dashboard')}
+                  className="h-14 px-8 rounded-full text-lg bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 shadow-xl shadow-rose-200 hover:shadow-rose-300 transition-all hover:-translate-y-1"
+                >
+                  Open App →
                 </Button>
-              </Link>
+              ) : (
+                <Link href="/login">
+                  <Button size="lg" className="h-14 px-8 rounded-full text-lg bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 shadow-xl shadow-rose-200 hover:shadow-rose-300 transition-all hover:-translate-y-1">
+                    {t('cta')}
+                  </Button>
+                </Link>
+              )}
               <Button variant="ghost" className="h-14 px-8 rounded-full text-lg font-semibold text-gray-600 hover:bg-gray-100/50">
                 How it works
               </Button>
@@ -217,11 +240,21 @@ export default function LandingPage() {
                Your next adventure starts here.
              </p>
              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-               <Link href="/login">
-                  <Button size="lg" className="w-full sm:w-auto h-16 px-10 rounded-full text-xl font-bold bg-white text-gray-900 hover:bg-gray-100">
-                    Get Started Free
-                  </Button>
-               </Link>
+               {session ? (
+                 <Button 
+                   size="lg" 
+                   onClick={() => router.push('/dashboard')}
+                   className="w-full sm:w-auto h-16 px-10 rounded-full text-xl font-bold bg-white text-gray-900 hover:bg-gray-100"
+                 >
+                   Open App →
+                 </Button>
+               ) : (
+                 <Link href="/login">
+                    <Button size="lg" className="w-full sm:w-auto h-16 px-10 rounded-full text-xl font-bold bg-white text-gray-900 hover:bg-gray-100">
+                      Get Started Free
+                    </Button>
+                 </Link>
+               )}
              </div>
              <p className="text-sm text-gray-500 pt-4">No credit card required • Cancel anytime</p>
            </div>

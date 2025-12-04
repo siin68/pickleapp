@@ -44,6 +44,8 @@ model User {
   receivedFriendRequests FriendRequest[] @relation("ReceiverFriendRequests")
   friendships1      Friendship[]         @relation("User1Friendships")
   friendships2      Friendship[]         @relation("User2Friendships")
+  sentSwipes        Swipe[]              @relation("UserSwipes")
+  receivedSwipes    Swipe[]              @relation("ReceivedSwipes")
   sentReviews       Review[]             @relation("ReviewSender")
   receivedReviews   Review[]             @relation("ReviewReceiver")
   notifications     Notification[]
@@ -250,6 +252,21 @@ model Message {
 }
 
 // Social Features
+model Swipe {
+  id        String    @id @default(cuid())
+  userId    String
+  targetId  String
+  action    String    // LIKE, NOPE
+  createdAt DateTime  @default(now())
+  expiresAt DateTime? // Only for NOPE actions - expires after 1 week
+  
+  user      User      @relation("UserSwipes", fields: [userId], references: [id], onDelete: Cascade)
+  target    User      @relation("ReceivedSwipes", fields: [targetId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, targetId])
+  @@index([expiresAt])
+}
+
 model FriendRequest {
   id          String              @id @default(cuid())
   senderId    String
