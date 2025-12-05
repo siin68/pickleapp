@@ -130,6 +130,9 @@ export default function HobbyMatchPage() {
   const router = useRouter();
   const { data: session } = useSession();
 
+  // Get userId from URL params (if redirected from likes)
+  const [priorityUserId, setPriorityUserId] = useState<string | null>(null);
+
   // --- STATE ---
   const [users, setUsers] = useState<MatchUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -155,7 +158,20 @@ export default function HobbyMatchPage() {
         const data = await response.json();
 
         if (data.success) {
-          setUsers(data.data || []);
+          let matchedUsers = data.data || [];
+          
+          // If there's a priority user from likes, move them to front
+          if (priorityUserId) {
+            const priorityIndex = matchedUsers.findIndex(
+              (u: MatchUser) => u.id === priorityUserId
+            );
+            if (priorityIndex > 0) {
+              const priorityUser = matchedUsers.splice(priorityIndex, 1)[0];
+              matchedUsers.unshift(priorityUser);
+            }
+          }
+          
+          setUsers(matchedUsers);
         } else {
           console.error("Failed to fetch matches:", data.error);
           setUsers([]);
@@ -169,7 +185,18 @@ export default function HobbyMatchPage() {
     }
 
     fetchMatches();
-  }, [session?.user?.id]);
+  }, [session?.user?.id, priorityUserId]);
+
+  // Get priority user from URL
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const userId = params.get("userId");
+      if (userId) {
+        setPriorityUserId(userId);
+      }
+    }
+  }, []);
 
   // Fetch hobbies for filter
   useEffect(() => {

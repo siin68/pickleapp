@@ -127,23 +127,22 @@ export async function GET(request: NextRequest) {
 // DELETE endpoint to remove a friendship (unmatch)
 export async function DELETE(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { userId, friendId } = body;
+    const { searchParams } = new URL(request.url);
+    const friendshipId = searchParams.get("friendshipId");
 
-    if (!userId || !friendId) {
+    if (!friendshipId) {
       return NextResponse.json(
-        { success: false, error: "Missing userId or friendId" },
+        { success: false, error: "Missing friendshipId" },
         { status: 400 }
       );
     }
 
-    // Find and delete the friendship
-    const friendship = await prisma.friendship.findFirst({
-      where: {
-        OR: [
-          { user1Id: userId, user2Id: friendId },
-          { user1Id: friendId, user2Id: userId },
-        ],
+    // Get friendship details before deleting
+    const friendship = await prisma.friendship.findUnique({
+      where: { id: friendshipId },
+      select: {
+        user1Id: true,
+        user2Id: true,
       },
     });
 
@@ -154,17 +153,18 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    await prisma.friendship.delete({
-      where: { id: friendship.id },
-    });
-
-    // Optionally, also delete the swipe records
-    await Promise.all([
+    // Delete friendship and swipe records in a transaction
+    await prisma.$transaction([
+      // Delete the friendship
+      prisma.friendship.delete({
+        where: { id: friendshipId },
+      }),
+      // Delete swipe records between these two users
       prisma.swipe.deleteMany({
         where: {
           OR: [
-            { userId, targetId: friendId },
-            { userId: friendId, targetId: userId },
+            { userId: friendship.user1Id, targetId: friendship.user2Id },
+            { userId: friendship.user2Id, targetId: friendship.user1Id },
           ],
         },
       }),
