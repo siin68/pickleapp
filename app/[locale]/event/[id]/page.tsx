@@ -856,7 +856,7 @@ export default function EventDetailPage() {
                   // Find or create chat for this event
                   const eventChat = event.chats?.find((chat: any) => chat.type === 'EVENT');
                   if (eventChat) {
-                    router.push(`/${locale}/chat/${eventChat.id}`);
+                    router.push(`/chat/${eventChat.id}`);
                   } else {
                     // Handle case where chat doesn't exist yet
                     console.log('Chat not found for event');

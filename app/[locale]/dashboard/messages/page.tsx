@@ -283,7 +283,7 @@ export default function MessagesPage() {
       });
 
       if (existingChat) {
-        router.push(`/${locale}/chat/${(existingChat as any).id}`);
+        router.push(`/chat/${(existingChat as any).id}`);
       } else {
         const response = await fetch("/api/chats", {
           method: "POST",
@@ -297,7 +297,7 @@ export default function MessagesPage() {
         const data = await response.json();
 
         if (data.success && data.data) {
-          router.push(`/${locale}/chat/${data.data.id}`);
+          router.push(`/chat/${data.data.id}`);
         } else {
           alert("Không thể tạo cuộc trò chuyện. Vui lòng thử lại.");
         }
@@ -499,7 +499,7 @@ export default function MessagesPage() {
                 chats.map((chat: any) => {
                   const otherParticipant = chat.participants.find((p: any) => p.id !== session?.user?.id);
                   return (
-                    <Card key={chat.id} onClick={() => router.push(`/${locale}/chat/${chat.id}`)} className="cursor-pointer hover:shadow-lg transition-all group">
+                    <Card key={chat.id} onClick={() => router.push(`/chat/${chat.id}`)} className="cursor-pointer hover:shadow-lg transition-all group">
                       <CardContent className="pt-6">
                         <div className="flex items-center gap-4">
                           <div className="relative">
@@ -708,7 +708,7 @@ export default function MessagesPage() {
                     return (
                       <Card
                         key={chat.id}
-                        onClick={() => router.push(`/${locale}/chat/${chat.id}`)}
+                        onClick={() => router.push(`/chat/${chat.id}`)}
                         className="cursor-pointer hover:shadow-lg transition-all group"
                       >
                         <CardContent className="pt-6">
