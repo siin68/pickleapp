@@ -103,10 +103,73 @@ export async function POST(
       });
     }
 
+    // Create or get event group chat
+    let eventChat = await prisma.chat.findFirst({
+      where: { eventId, type: "EVENT" },
+    });
+
+    if (!eventChat) {
+      // Create new group chat for the event
+      eventChat = await prisma.chat.create({
+        data: {
+          eventId,
+          type: "EVENT",
+          name: event.title,
+          participants: {
+            create: [
+              { userId: event.hostId, role: "OWNER" },
+              { userId, role: "MEMBER" },
+            ],
+          },
+        },
+      });
+
+      // Send system message
+      await prisma.message.create({
+        data: {
+          chatId: eventChat.id,
+          senderId: userId,
+          content: `${user.name} created the group chat`,
+          type: "SYSTEM",
+        },
+      });
+    } else {
+      // Check if user is already in chat
+      const existingParticipant = await prisma.chatParticipant.findUnique({
+        where: {
+          chatId_userId: {
+            chatId: eventChat.id,
+            userId,
+          },
+        },
+      });
+
+      if (!existingParticipant) {
+        // Add user to existing chat
+        await prisma.chatParticipant.create({
+          data: {
+            chatId: eventChat.id,
+            userId,
+            role: "MEMBER",
+          },
+        });
+
+        // Send system message
+        await prisma.message.create({
+          data: {
+            chatId: eventChat.id,
+            senderId: userId,
+            content: `${user.name} joined the group`,
+            type: "SYSTEM",
+          },
+        });
+      }
+    }
+
     // Create notification for event host
     const notification = await prisma.notification.create({
       data: {
-        userId: event.hostId,
+        userId: event.host.id,
         type: "EVENT_JOIN",
         title: "New participant joined",
         message: `${user.name} has joined your event "${event.title}"`,
@@ -115,6 +178,7 @@ export async function POST(
           participantId: userId,
           participantName: user.name,
           participantImage: user.image,
+          chatId: eventChat.id,
         }),
       },
     });
@@ -122,9 +186,10 @@ export async function POST(
     // Emit real-time notification via Socket.IO
     try {
       const { socketEmit } = await import('@/lib/socket');
+      const hostUserId = event.host.id;
+      console.log('[DEBUG] event.hostId:', event.hostId, 'event.host.id:', event.host.id);
       
-      // Send notification to host
-      socketEmit.toUser(event.hostId, 'notification', {
+      await socketEmit.toUser(hostUserId, 'notification', {
         id: notification.id,
         type: 'EVENT_JOIN',
         title: notification.title,
@@ -134,17 +199,25 @@ export async function POST(
           participantId: userId,
           participantName: user.name,
           participantImage: user.image,
+          chatId: eventChat.id,
         },
         createdAt: notification.createdAt,
       });
 
-      // Broadcast to all event participants
-      socketEmit.toEvent(eventId, 'event-joined', {
+      await socketEmit.toEvent(eventId, 'event-joined', {
         eventId,
         userId,
         userName: user.name,
         userImage: user.image,
         participantCount: newParticipantCount,
+        chatId: eventChat.id,
+      });
+
+      await socketEmit.toChat(eventChat.id, 'chat-member-joined', {
+        chatId: eventChat.id,
+        userId,
+        userName: user.name,
+        userImage: user.image,
       });
     } catch (socketError) {
       console.error('Socket emit error:', socketError);
@@ -156,6 +229,7 @@ export async function POST(
       data: {
         participant,
         participantCount: newParticipantCount,
+        chatId: eventChat.id,
       },
     });
   } catch (error: any) {
@@ -279,50 +353,54 @@ export async function DELETE(
       select: { name: true, image: true },
     });
 
-    // Create notification for event host
-    if (user) {
-      const notification = await prisma.notification.create({
+    // Remove user from event group chat
+    const eventChat = await prisma.chat.findFirst({
+      where: { eventId, type: "EVENT" },
+    });
+
+    if (eventChat && user) {
+      // Update chat participant (mark as left instead of deleting)
+      await prisma.chatParticipant.updateMany({
+        where: {
+          chatId: eventChat.id,
+          userId,
+        },
         data: {
-          userId: event.hostId,
-          type: "EVENT_LEAVE",
-          title: "Participant left event",
-          message: `${user.name} has left your event "${event.title}"`,
-          data: JSON.stringify({
-            eventId,
-            participantId: userId,
-            participantName: user.name,
-            participantImage: user.image,
-          }),
+          leftAt: new Date(),
         },
       });
 
-      // Emit real-time notification via Socket.IO
+      // Send system message
+      await prisma.message.create({
+        data: {
+          chatId: eventChat.id,
+          senderId: userId,
+          content: `${user.name} left the group`,
+          type: "SYSTEM",
+        },
+      });
+    }
+
+    // Emit real-time events for UI updates (no notification for leave)
+    if (user) {
       try {
         const { socketEmit } = await import('@/lib/socket');
-        
-        // Send notification to host
-        socketEmit.toUser(event.hostId, 'notification', {
-          id: notification.id,
-          type: 'EVENT_LEAVE',
-          title: notification.title,
-          message: notification.message,
-          data: {
-            eventId,
-            participantId: userId,
-            participantName: user.name,
-            participantImage: user.image,
-          },
-          createdAt: notification.createdAt,
-        });
 
-        // Broadcast to all event participants
-        socketEmit.toEvent(eventId, 'event-left', {
+        await socketEmit.toEvent(eventId, 'event-left', {
           eventId,
           userId,
           userName: user.name,
           userImage: user.image,
           participantCount: newParticipantCount,
         });
+
+        if (eventChat) {
+          await socketEmit.toChat(eventChat.id, 'chat-member-left', {
+            chatId: eventChat.id,
+            userId,
+            userName: user.name,
+          });
+        }
       } catch (socketError) {
         console.error('Socket emit error:', socketError);
       }

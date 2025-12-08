@@ -19,7 +19,7 @@ interface Notification {
 export default function NotificationBell() {
   const router = useRouter();
   const { data: session } = useSession();
-  const { socket, isConnected } = useSocket();
+  const { isConnected } = useSocket();
   
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -46,52 +46,29 @@ export default function NotificationBell() {
   }, [session?.user?.id, fetchNotifications]);
 
   useEffect(() => {
-    if (!socket || !isConnected) return;
-
-    if (session?.user?.id) {
-      socket.emit('join', session.user.id);
-    }
-
-    socket.on('notification', (notification: Notification) => {
+    const handleNotification = (event: CustomEvent) => {
+      const notification = event.detail as Notification;
+      
       setNotifications(prev => [{
         ...notification,
         read: false,
       }, ...prev]);
-      
       setUnreadCount(prev => prev + 1);
 
-      if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-        new Notification(notification.title, {
+      if (typeof window !== 'undefined' && 'Notification' in window && window.Notification.permission === 'granted') {
+        new window.Notification(notification.title, {
           body: notification.message,
           icon: '/icon.png',
         });
       }
-    });
+    };
 
-    socket.on('friend-request-received', (data: any) => {
-      window.dispatchEvent(new CustomEvent('friend-request-received', { detail: data }));
-    });
-
-    socket.on('friend-request-accepted', (data: any) => {
-      window.dispatchEvent(new CustomEvent('friend-request-accepted', { detail: data }));
-    });
-
-    socket.on('event-joined', (data: any) => {
-      window.dispatchEvent(new CustomEvent('event-joined', { detail: data }));
-    });
-
-    socket.on('event-left', (data: any) => {
-      window.dispatchEvent(new CustomEvent('event-left', { detail: data }));
-    });
+    window.addEventListener('socket-notification' as any, handleNotification as any);
 
     return () => {
-      socket.off('notification');
-      socket.off('friend-request-received');
-      socket.off('friend-request-accepted');
-      socket.off('event-joined');
-      socket.off('event-left');
+      window.removeEventListener('socket-notification' as any, handleNotification as any);
     };
-  }, [socket, isConnected, session?.user?.id]);
+  }, []);
 
   const markAsRead = async (notificationId: string) => {
     try {

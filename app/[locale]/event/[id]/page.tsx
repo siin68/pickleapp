@@ -44,6 +44,7 @@ interface Event {
   hobby?: any;
   location?: any;
   participants?: any[];
+  chats?: { id: string; type: string }[];
   _count?: { participants: number };
 }
 
