@@ -206,7 +206,7 @@ export default function MyEventsPage() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 pb-24 pt-20">
           {getActiveEvents().map((event) => {
             const primaryHobby =
               event.hobbies?.find((h) => h.isPrimary)?.hobby ||
@@ -238,22 +238,6 @@ export default function MyEventsPage() {
                   )}
 
                   <div className="absolute inset-0 bg-black/20"></div>
-
-                  <div className="absolute top-4 left-4">
-                    <Avatar className="w-12 h-12 border-2 border-white/80 shadow-lg">
-                      <AvatarImage
-                        src={
-                          event.host?.image ||
-                          `https://api.dicebear.com/7.x/avataaars/svg?seed=${event.hostId}`
-                        }
-                        alt={event.host?.name || "Host"}
-                      />
-                      <AvatarFallback className="bg-white/90 text-gray-700 font-bold">
-                        {(event.host?.name || "H").charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
-
                   <div className="absolute top-4 right-4">
                     <Badge
                       className={`
@@ -328,26 +312,6 @@ export default function MyEventsPage() {
                   </div>
 
                   <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Avatar className="w-6 h-6">
-                        <AvatarImage
-                          src={
-                            event.host?.image ||
-                            `https://api.dicebear.com/7.x/avataaars/svg?seed=${event.hostId}`
-                          }
-                          alt={event.host?.name || "Host"}
-                        />
-                        <AvatarFallback className="bg-gray-100 text-gray-600 text-[10px] font-bold">
-                          {(event.host?.name || "H").charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="text-xs font-medium text-gray-500">
-                        {isHost
-                          ? "You're hosting"
-                          : `by ${event.host?.name || "Host"}`}
-                      </span>
-                    </div>
-
                     <div className="flex items-center gap-1.5 text-xs font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded-full">
                       <UsersIcon className="w-3 h-3" />
                       <span>

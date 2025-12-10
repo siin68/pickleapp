@@ -6,7 +6,7 @@ import { useRouter } from '@/i18n/navigation';
 import { useSession } from 'next-auth/react';
 import { useSocket } from '@/contexts/SocketContext';
 import { Button, Avatar, AvatarImage, AvatarFallback } from '@/components/ui';
-import { ArrowLeft, Send, Paperclip, Info, Users, MoreVertical, Phone, Video, Calendar, Plus, MapPin, Clock, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Send, Paperclip, Info, Users, ChevronDown, MoreVertical, Phone, Video, Calendar, Plus, Clock } from 'lucide-react';
 
 interface Message {
   id: number;
@@ -55,13 +55,13 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [hasNewMessage, setHasNewMessage] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const isNearBottomRef = useRef(true);
-  const initialScrollDoneRef = useRef(false);
   const [showSubEvents, setShowSubEvents] = useState(false);
   const [showCreateSubEvent, setShowCreateSubEvent] = useState(false);
   const [subEvents, setSubEvents] = useState<any[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isNearBottomRef = useRef(true);
+  const initialScrollDoneRef = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const fetchChat = useCallback(async () => {
@@ -179,7 +179,7 @@ export default function ChatPage() {
         setMessage('');
         // Reset height immediately after send
         if (textareaRef.current) {
-            textareaRef.current.style.height = 'auto';
+          textareaRef.current.style.height = 'auto';
         }
       }
     } catch (error) {
@@ -193,10 +193,10 @@ export default function ChatPage() {
     return (
       <div className="flex flex-col h-[100dvh] bg-slate-50 items-center justify-center">
         <div className="relative">
-            <div className="w-16 h-16 border-4 border-violet-100 border-t-violet-600 rounded-full animate-spin" />
-            <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-8 h-8 bg-white rounded-full" />
-            </div>
+          <div className="w-16 h-16 border-4 border-violet-100 border-t-violet-600 rounded-full animate-spin" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-8 h-8 bg-white rounded-full" />
+          </div>
         </div>
       </div>
     );
@@ -322,13 +322,13 @@ export default function ChatPage() {
               </Button>
             )}
             <Button variant="ghost" size="icon" className="hidden sm:inline-flex rounded-full text-slate-400 hover:text-violet-600 hover:bg-violet-50 transition-colors">
-                <Phone className="w-5 h-5" />
+              <Phone className="w-5 h-5" />
             </Button>
             <Button variant="ghost" size="icon" className="hidden sm:inline-flex rounded-full text-slate-400 hover:text-violet-600 hover:bg-violet-50 transition-colors">
-                <Video className="w-5 h-5" />
+              <Video className="w-5 h-5" />
             </Button>
             <Button variant="ghost" size="icon" className="rounded-full text-slate-400 hover:text-slate-800 hover:bg-slate-100">
-                <MoreVertical className="w-5 h-5" />
+              <MoreVertical className="w-5 h-5" />
             </Button>
           </div>
         </div>
@@ -360,44 +360,53 @@ export default function ChatPage() {
                 <p className="text-sm">Chưa có cuộc hẹn nào</p>
               </div>
             ) : (
-              <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto scrollbar-hide pr-2">
-                  {subEvents.filter(subEvent => new Date(subEvent.date) > new Date()).map((subEvent) => (
-                    <div
-                      key={subEvent.id}
-                      onClick={() => router.push(`/event/${subEvent.id}`)}
-                      className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl p-3 border border-violet-100 hover:shadow-md transition-all cursor-pointer group"
-                    >
-                      <h4 className="font-bold text-slate-800 text-sm mb-2 group-hover:text-violet-700 transition-colors">
-                        {subEvent.title}
-                      </h4>
-                      <div className="space-y-1 text-xs text-slate-600">
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-3 h-3 text-violet-500" />
-                          {new Date(subEvent.date).toLocaleDateString('vi-VN', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Users className="w-3 h-3 text-violet-500" />
-                          {subEvent.participants?.length || 0}/{subEvent.maxParticipants} người
-                        </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto scrollbar-hide pr-2">
+                {subEvents.filter(subEvent => new Date(subEvent.date) > new Date()).map((subEvent) => (
+                  <div
+                    key={subEvent.id}
+                    onClick={() => router.push(`/event/${subEvent.id}`)}
+                    className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl p-3 border border-violet-100 hover:shadow-md transition-all cursor-pointer group"
+                  >
+                    <h4 className="font-bold text-slate-800 text-sm mb-2 group-hover:text-violet-700 transition-colors">
+                      {subEvent.title}
+                    </h4>
+                    <div className="space-y-1 text-xs text-slate-600">
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-3 h-3 text-violet-500" />
+                        {new Date(subEvent.date).toLocaleDateString('vi-VN', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Users className="w-3 h-3 text-violet-500" />
+                        {subEvent.participants?.length || 0}/{subEvent.maxParticipants} người
                       </div>
                     </div>
-                  ))}
-                </div>
-              </>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </div>
       )}
       
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto px-4 py-6 z-10 scroll-smooth" ref={scrollRef}>
+      <div className="flex-1 overflow-y-auto px-4 py-6 z-10 scroll-smooth" ref={scrollRef} onScroll={handleScroll}>
+        {/* New Messages Button */}
+        {hasNewMessage && (
+          <button
+            onClick={() => scrollToBottom(true)}
+            className="fixed bottom-28 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-rose-500 to-purple-600 text-white text-sm font-semibold rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all animate-bounce"
+          >
+            <ChevronDown className="w-4 h-4" />
+            Tin nhắn mới
+          </button>
+        )}
+        
         <div className="max-w-4xl mx-auto space-y-6">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-[50vh] text-slate-400 animate-in fade-in duration-700">
@@ -413,8 +422,6 @@ export default function ChatPage() {
               const isSequence = index > 0 && messages[index - 1].sender.id === msg.sender.id;
               const isLastInSequence = index === messages.length - 1 || messages[index + 1].sender.id !== msg.sender.id;
               const isSystemMessage = msg.type === 'SYSTEM';
-
-              // Date separator logic can be added here if timestamp suggests new day
 
               if (isSystemMessage) {
                 return (
@@ -476,7 +483,7 @@ export default function ChatPage() {
               );
             })
           )}
-          <div className="h-2" />
+          <div className="h-2" ref={messagesEndRef} />
         </div>
       </div>
       
