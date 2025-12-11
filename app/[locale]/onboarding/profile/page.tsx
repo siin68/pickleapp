@@ -174,7 +174,7 @@ export default function OnboardingProfilePage() {
             {t("title")}
           </h1>
           <p className="text-lg text-gray-500 max-w-sm mx-auto">
-            Lets start with the basics. Who are you?
+            {t("subtitle")}
           </p>
         </div>
 
@@ -217,7 +217,7 @@ export default function OnboardingProfilePage() {
                 </label>
               </div>
               <p className="mt-4 text-sm font-medium text-gray-400">
-                {uploadingImage ? "Uploading photo..." : "Tap to upload photo"}
+                {uploadingImage ? t("uploadingPhoto") : t("uploadPhoto")}
               </p>
             </div>
 
@@ -232,7 +232,7 @@ export default function OnboardingProfilePage() {
                     setFormData({ ...formData, name: e.target.value })
                   }
                   required
-                  placeholder="e.g. Alex Doe"
+                  placeholder={t("namePlaceholder")}
                   className="h-14 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:border-rose-300 focus:ring-4 focus:ring-rose-50 transition-all font-semibold text-lg"
                 />
               </div>
@@ -251,7 +251,7 @@ export default function OnboardingProfilePage() {
                     required
                     min="18"
                     max="100"
-                    placeholder="18+"
+                    placeholder={t("agePlaceholder")}
                     className="h-14 rounded-2xl bg-gray-50 border-transparent focus:bg-white focus:border-rose-300 focus:ring-4 focus:ring-rose-50 transition-all font-semibold text-lg text-center"
                   />
                 </div>
@@ -276,10 +276,10 @@ export default function OnboardingProfilePage() {
                           `}
                       >
                         {gender === "male"
-                          ? "Him"
+                          ? t("him")
                           : gender === "female"
-                          ? "Her"
-                          : "Them"}
+                          ? t("her")
+                          : t("them")}
                       </button>
                     ))}
                   </div>
@@ -311,7 +311,7 @@ export default function OnboardingProfilePage() {
               {isSubmitting ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Saving...
+                  {tCommon("saving")}
                 </>
               ) : (
                 <>

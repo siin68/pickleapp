@@ -114,8 +114,8 @@ export default function LocationsStep() {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500 mx-auto mb-4"></div>
           <p className="text-gray-600">
             {checkingOnboarding
-              ? "Checking profile status..."
-              : "Loading locations..."}
+              ? tCommon("locations.checkingProfile")
+              : tCommon("locations.loadingLocations")}
           </p>
         </div>
       </div>
@@ -177,7 +177,7 @@ export default function LocationsStep() {
       console.error("Error getting location:", error);
       setError(
         error.message ||
-          "Không thể lấy vị trí hiện tại. Vui lòng chọn thủ công."
+          tCommon("locations.couldNotGetLocation")
       );
     } finally {
       setGettingLocation(false);
@@ -233,19 +233,19 @@ export default function LocationsStep() {
         setError(null);
 
         setSuccessMessage(
-          `Đã tạo địa điểm mới: "${result.data.name}" tại vị trí hiện tại của bạn.`
+          tCommon("locations.createdLocation", { name: result.data.name })
         );
-        setTimeout(() => setSuccessMessage(null), 5000); // Clear success message after 5s
+        setTimeout(() => setSuccessMessage(null), 5000);
       } else {
         setError(
-          `Không thể tự động tạo địa điểm từ vị trí hiện tại. ${
+          `${tCommon("locations.failedAutoCreate")} ${
             result.error || ""
           }`
         );
       }
     } catch (error) {
       console.error("Error creating location from GPS:", error);
-      setError("Có lỗi xảy ra khi tự động tạo địa điểm từ vị trí hiện tại.");
+      setError(tCommon("locations.errorCreatingLocation"));
     }
   };
 
@@ -278,14 +278,14 @@ export default function LocationsStep() {
         setLocations((prev) => [...prev, result.data]);
         setSelectedLocations([result.data.id]);
         setNewLocationName("");
-        setSuccessMessage(`Đã thêm địa điểm: "${result.data.name}"`);
+        setSuccessMessage(tCommon("locations.addedLocation", { name: result.data.name }));
         setTimeout(() => setSuccessMessage(null), 3000);
       } else {
-        setError(result.error || "Không thể thêm location mới");
+        setError(result.error || tCommon("locations.failedToAddLocation"));
       }
     } catch (error) {
       console.error("Error adding location:", error);
-      setError("Có lỗi xảy ra khi thêm location");
+      setError(tCommon("locations.errorAddingLocation"));
     } finally {
       setAddingLocation(false);
     }
@@ -377,11 +377,11 @@ export default function LocationsStep() {
 
         router.push("/dashboard");
       } else {
-        setError(result.error || "Failed to save profile");
+        setError(result.error || tCommon("locations.failedToSave"));
       }
     } catch (err) {
       console.error("Error saving profile:", err);
-      setError("Failed to save profile. Please try again.");
+      setError(tCommon("locations.failedToSave"));
     } finally {
       setIsSubmitting(false);
     }
@@ -403,13 +403,13 @@ export default function LocationsStep() {
             {t("title")}
           </h1>
           <p className="text-lg text-gray-500 max-w-md mx-auto">
-            Chọn 1 địa điểm để tham gia các hoạt động meetup
+            {t("subtitle")}
           </p>
           <div className="inline-flex items-center px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full shadow-lg border border-white/50">
             <span className="text-sm font-semibold text-primary-700">
               {selectedLocations.length > 0
-                ? "✅ Đã chọn 1 vị trí"
-                : "📍 Chọn 1 vị trí"}
+                ? `✅ ${t("selectedOne")}`
+                : `📍 ${t("selectOne")}`}
             </span>
           </div>
         </div>
@@ -434,9 +434,9 @@ export default function LocationsStep() {
                 </svg>
               </div>
               <div>
-                <h3 className="font-bold text-gray-900">Vị trí hiện tại</h3>
+                <h3 className="font-bold text-gray-900">{t("currentLocation")}</h3>
                 <p className="text-sm text-gray-500">
-                  Tự động chọn địa điểm gần bạn nhất
+                  {t("autoSelectNearest")}
                 </p>
               </div>
             </div>
@@ -464,7 +464,7 @@ export default function LocationsStep() {
                   <polygon points="3,11 22,2 13,21 11,13 3,11"></polygon>
                 </svg>
               )}
-              {gettingLocation ? "Đang định vị..." : "📍 Lấy vị trí"}
+              {gettingLocation ? t("gettingLocation") : `📍 ${t("getLocation")}`}
             </Button>
           </div>
 
@@ -473,9 +473,9 @@ export default function LocationsStep() {
               <div className="flex items-center gap-2 px-4 py-3 bg-emerald-50 rounded-xl border border-emerald-200 mb-4">
                 <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                 <p className="text-sm text-emerald-700 font-medium">
-                  ✅ Đã xác định vị trí
-                  {userLocation.city ? ` tại ${userLocation.city}` : ""}
-                  {showNearbyOnly && ` • Hiển thị trong bán kính 50km`}
+                  ✅ {t("locationDetected")}
+                  {userLocation.city ? ` ${userLocation.city}` : ""}
+                  {showNearbyOnly && ` • ${t("within50km")}`}
                 </p>
               </div>
 
@@ -486,7 +486,7 @@ export default function LocationsStep() {
                   size="sm"
                   className="flex items-center gap-2"
                 >
-                  {showNearbyOnly ? "📍 Gần đây" : "🌍 Tất cả"}
+                  {showNearbyOnly ? `📍 ${t("nearby")}` : `🌍 ${t("all")}`}
                   <span className="text-xs">
                     (
                     {showNearbyOnly
@@ -513,8 +513,8 @@ export default function LocationsStep() {
                       <path d="12 6v6l4 2" />
                     </svg>
                     {filteredLocations.length === 0
-                      ? "Không có địa điểm nào gần bạn"
-                      : `${filteredLocations.length} địa điểm được sắp xếp theo khoảng cách`}
+                      ? t("noNearbyLocations")
+                      : `${filteredLocations.length} ${tCommon("locations.locationsSortedByDistance")}`}
                   </div>
                 )}
               </div>
@@ -542,16 +542,16 @@ export default function LocationsStep() {
                 </svg>
               </div>
               <div>
-                <h3 className="font-bold text-gray-900">Thêm vị trí mới</h3>
+                <h3 className="font-bold text-gray-900">{t("addNewLocation")}</h3>
                 <p className="text-sm text-gray-500">
-                  Tạo địa điểm gần vị trí hiện tại của bạn
+                  {t("createNearYou")}
                 </p>
               </div>
             </div>
 
             <div className="flex gap-3">
               <Input
-                placeholder="Nhập tên địa điểm (VD: Quận 1, Trung tâm thành phố...)"
+                placeholder={t("locationNamePlaceholder")}
                 value={newLocationName}
                 onChange={(e) => setNewLocationName(e.target.value)}
                 className="flex-1"
@@ -565,7 +565,7 @@ export default function LocationsStep() {
                 {addingLocation ? (
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                 ) : (
-                  "Thêm"
+                  t("add")
                 )}
               </Button>
             </div>
@@ -580,13 +580,13 @@ export default function LocationsStep() {
               </div>
               <h3 className="text-lg font-bold text-gray-800 mb-2">
                 {showNearbyOnly
-                  ? "Không có địa điểm nào trong bán kính 50km"
-                  : "Chưa có địa điểm nào có sẵn"}
+                  ? t("noNearbyLocations")
+                  : t("noLocations")}
               </h3>
               <p className="text-gray-500 mb-6 max-w-md mx-auto">
                 {showNearbyOnly
-                  ? "Hãy thêm địa điểm mới ở vị trí hiện tại của bạn hoặc xem tất cả địa điểm có sẵn."
-                  : "Hiện tại chưa có địa điểm nào trong hệ thống. Bạn có thể thêm địa điểm mới."}
+                  ? t("noNearbyLocations")
+                  : t("noLocations")}
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 {showNearbyOnly && (
@@ -595,7 +595,7 @@ export default function LocationsStep() {
                     variant="outline"
                     className="flex items-center gap-2"
                   >
-                    🌍 Xem tất cả địa điểm
+                    🌍 {t("viewAllLocations")}
                   </Button>
                 )}
                 {userLocation && (
@@ -603,7 +603,7 @@ export default function LocationsStep() {
                     onClick={() => setNewLocationName("")}
                     className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white"
                   >
-                    ➕ Thêm địa điểm mới
+                    ➕ {t("addNewLocationBtn")}
                   </Button>
                 )}
               </div>
@@ -714,9 +714,9 @@ export default function LocationsStep() {
                               }`}
                             >
                               {formatDistance(distance)}
-                              {distance <= 5 && " • Rất gần"}
-                              {distance > 5 && distance <= 20 && " • Gần"}
-                              {distance > 20 && " • Xa"}
+                              {distance <= 5 && ` • ${t("veryNear")}`}
+                              {distance > 5 && distance <= 20 && ` • ${t("near")}`}
+                              {distance > 20 && ` • ${t("far")}`}
                             </span>
                           </div>
                         )}

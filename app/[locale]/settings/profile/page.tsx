@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { Button, Input, Textarea } from '@/components/ui';
 import { uploadToCloudinaryClient } from '@/lib/cloudinary';
@@ -21,6 +22,7 @@ const SparklesIcon = ({ className }: { className?: string }) => (
 export default function EditProfilePage() {
   const router = useRouter();
   const { data: session } = useSession();
+  const t = useTranslations('settings.profile');
   const hasLoadedRef = useRef(false);
 
   const [initialData, setInitialData] = useState<any>(null);
@@ -68,7 +70,7 @@ export default function EditProfilePage() {
         }
       } catch (error) {
         console.error('Error loading user data:', error);
-        toast.error('❌ Failed to load profile data');
+        toast.error(`❌ ${t('failedToLoad')}`);
       } finally {
         setIsLoading(false);
       }
@@ -89,12 +91,12 @@ export default function EditProfilePage() {
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('❌ Image must be less than 5MB');
+      toast.error(`❌ ${t('imageTooLarge')}`);
       return;
     }
 
     if (!file.type.startsWith('image/')) {
-      toast.error('❌ Please upload an image file');
+      toast.error(`❌ ${t('invalidImage')}`);
       return;
     }
 
@@ -116,7 +118,7 @@ export default function EditProfilePage() {
       
     } catch (error) {
       console.error('Failed to upload image:', error);
-      toast.error('❌ Failed to upload image');
+      toast.error(`❌ ${t('failedToUpload')}`);
       setImagePreview(initialData?.image || '');
     } finally {
       setIsUploading(false);
@@ -125,34 +127,34 @@ export default function EditProfilePage() {
 
   const validateForm = (): boolean => {
     if (!formData.name.trim()) {
-      toast.error('❌ Name is required');
+      toast.error(`❌ ${t('nameRequired')}`);
       return false;
     }
     if (formData.name.trim().length < 2) {
-      toast.error('❌ Name must be at least 2 characters');
+      toast.error(`❌ ${t('nameMinLength')}`);
       return false;
     }
     if (formData.name.trim().length > 50) {
-      toast.error('❌ Name must be less than 50 characters');
+      toast.error(`❌ ${t('nameMaxLength')}`);
       return false;
     }
 
     if (!formData.age) {
-      toast.error('❌ Age is required');
+      toast.error(`❌ ${t('ageRequired')}`);
       return false;
     }
     const ageNum = parseInt(formData.age);
     if (isNaN(ageNum) || ageNum < 18) {
-      toast.error('❌ You must be at least 18 years old');
+      toast.error(`❌ ${t('ageMinimum')}`);
       return false;
     }
     if (ageNum > 100) {
-      toast.error('❌ Please enter a valid age');
+      toast.error(`❌ ${t('ageInvalid')}`);
       return false;
     }
 
     if (formData.bio.length > 500) {
-      toast.error('❌ Bio must be less than 500 characters');
+      toast.error(`❌ ${t('bioMaxLength')}`);
       return false;
     }
 
@@ -187,7 +189,7 @@ export default function EditProfilePage() {
       setInitialData(formData);
       setIsDirty(false);
       
-      toast.success('✅ Profile updated!');
+      toast.success(`✅ ${t('profileUpdated')}`);
       
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -227,7 +229,7 @@ export default function EditProfilePage() {
           >
             <ArrowLeftIcon className="w-5 h-5" />
           </Button>
-          <h1 className="text-lg font-bold text-gray-900 tracking-tight">Edit Profile</h1>
+          <h1 className="text-lg font-bold text-gray-900 tracking-tight">{t('title')}</h1>
           <div className="w-10" />
         </div>
 
@@ -271,7 +273,7 @@ export default function EditProfilePage() {
                </div>
                
                <div className="text-center">
-                 <h2 className="text-2xl font-black text-gray-800 tracking-tight">{formData.name || 'Your Name'}</h2>
+                 <h2 className="text-2xl font-black text-gray-800 tracking-tight">{formData.name || t('yourName')}</h2>
                  <p className="text-sm text-gray-500 font-medium">@{session?.user?.email?.split('@')[0]}</p>
                </div>
           </div>
@@ -280,12 +282,12 @@ export default function EditProfilePage() {
              <div className="space-y-4">
                
                <div className="space-y-1.5">
-                 <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Full Name *</label>
+                 <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">{t('fullName')}</label>
                  <div className="relative group">
                     <Input
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="Jane Doe"
+                      placeholder={t('namePlaceholder')}
                       className="h-14 px-4 rounded-2xl bg-white border border-gray-100 shadow-sm focus:border-rose-400 focus:ring-4 focus:ring-rose-50 transition-all font-semibold text-gray-800 text-lg placeholder:text-gray-300"
                       minLength={2}
                       maxLength={50}
@@ -299,7 +301,7 @@ export default function EditProfilePage() {
 
                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                     <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Age *</label>
+                     <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">{t('age')}</label>
                      <Input
                         type="number"
                         value={formData.age}
@@ -311,16 +313,16 @@ export default function EditProfilePage() {
                       />
                   </div>
                   <div className="space-y-1.5">
-                     <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Gender</label>
+                     <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">{t('gender')}</label>
                      <div className="relative h-14">
                         <select
                           value={formData.gender}
                           onChange={(e) => setFormData({ ...formData, gender: e.target.value as any })}
                           className="w-full h-full rounded-2xl bg-white border border-gray-100 shadow-sm focus:border-rose-400 focus:ring-4 focus:ring-rose-50 outline-none transition-all font-semibold text-gray-800 px-4 appearance-none"
                         >
-                          <option value="male">Male</option>
-                          <option value="female">Female</option>
-                          <option value="other">Other</option>
+                          <option value="male">{t('male')}</option>
+                          <option value="female">{t('female')}</option>
+                          <option value="other">{t('other')}</option>
                         </select>
                         <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
@@ -331,7 +333,7 @@ export default function EditProfilePage() {
 
                <div className="space-y-1.5">
                  <div className="flex justify-between items-center ml-1">
-                   <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Bio</label>
+                   <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t('bio')}</label>
                    <span className={`text-[10px] font-bold ${formData.bio.length > 450 ? 'text-red-500' : 'text-gray-300'}`}>
                      {formData.bio.length}/500
                    </span>
@@ -339,7 +341,7 @@ export default function EditProfilePage() {
                  <Textarea
                     value={formData.bio}
                     onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                    placeholder="Tell us what makes you tick..."
+                    placeholder={t('bioPlaceholder')}
                     rows={6}
                     maxLength={500}
                     className="resize-none rounded-2xl bg-white border border-gray-100 shadow-sm focus:border-rose-400 focus:ring-4 focus:ring-rose-50 transition-all font-medium text-gray-700 p-4 text-base leading-relaxed"
@@ -359,7 +361,7 @@ export default function EditProfilePage() {
       >
          <div className="bg-gray-900/90 backdrop-blur-xl text-white pl-6 pr-2 py-2 rounded-full shadow-2xl shadow-gray-400/50 flex items-center gap-6 border border-white/10 max-w-sm w-full">
             <span className="text-sm font-medium text-gray-300 flex-1 truncate">
-              Unsaved changes
+              {t('unsavedChanges')}
             </span>
             <div className="flex items-center gap-2 shrink-0">
                <button 
@@ -367,14 +369,14 @@ export default function EditProfilePage() {
                  type="button"
                  className="px-4 py-2 text-sm font-bold text-gray-400 hover:text-white transition-colors"
                >
-                 Reset
+                 {t('reset')}
                </button>
                <Button 
                  onClick={handleSubmit}
                  type="button"
                  className="rounded-full bg-white text-gray-900 hover:bg-gray-200 font-bold px-6 py-2 shadow-lg transition-transform active:scale-95"
                >
-                 Save
+                 {t('save')}
                </Button>
             </div>
          </div>

@@ -119,7 +119,7 @@ export default function HobbiesStep() {
               <div className="flex items-center justify-center gap-2">
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-rose-500"></div>
                 <span className="text-gray-500 font-medium">
-                  Loading hobbies...
+                  {t("loadingHobbies")}
                 </span>
               </div>
             </div>
@@ -164,16 +164,16 @@ export default function HobbiesStep() {
           {t("title")}
         </h1>
         <p className="text-gray-600 mt-2">{t("subtitle")}</p>
-        <p className="text-sm font-semibold text-primary-700 mt-3">
-          {t("selected", { count: selectedHobbies.length })} / 3-8 hobbies
-        </p>
+          <p className="text-sm font-semibold text-primary-700 mt-3">
+            {t("selected", { count: selectedHobbies.length })} / {t("hobbiesRange")}
+          </p>
       </div>
 
       <Card className="mb-6">
         <CardContent className="pt-6">
           {hobbies.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-gray-500">No hobbies available</p>
+              <p className="text-gray-500">{t("noHobbies")}</p>
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
