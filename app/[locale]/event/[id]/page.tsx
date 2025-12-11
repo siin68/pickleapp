@@ -391,10 +391,10 @@ export default function EventDetailPage() {
         <div className="w-24 h-24 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-6">
           <MapPin className="w-10 h-10" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Event not found</h2>
-        <p className="text-gray-500 mb-8">{error || "We couldn't find the event you're looking for."}</p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">{t("notFound")}</h2>
+        <p className="text-gray-500 mb-8">{error || t("notFoundDesc")}</p>
         <Button onClick={() => router.push(`/dashboard`)} size="lg" className="rounded-full">
-          Back to Dashboard
+          {t("backToDashboard")}
         </Button>
       </div>
     );
@@ -457,7 +457,7 @@ export default function EventDetailPage() {
             <Badge 
               className={`${event.status === 'OPEN' ? 'bg-green-400/90 text-green-950' : 'bg-gray-400/90 text-gray-100'} backdrop-blur-md border-0 px-4 py-1.5 text-xs font-bold uppercase tracking-wider shadow-lg`}
             >
-              {event.status === 'OPEN' ? 'Open' : event.status}
+              {event.status === 'OPEN' ? t('open') : event.status}
             </Badge>
           </div>
         </div>
@@ -479,12 +479,12 @@ export default function EventDetailPage() {
                     </AvatarFallback>
                   </Avatar>
                   <div className="absolute -bottom-0.5 -right-0.5 bg-gradient-to-r from-amber-400 to-orange-400 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white shadow-sm">
-                    HOST
+                    {t("host")}
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-gray-400 uppercase tracking-wide">Organized by</div>
-                  <div className="text-base font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">{host?.name || "Unknown Host"}</div>
+                  <div className="text-xs font-bold text-gray-400 uppercase tracking-wide">{t("organizedBy")}</div>
+                  <div className="text-base font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">{host?.name || t("unknownHost")}</div>
                 </div>
               </div>
               <Button variant="ghost" size="sm" className="text-gray-400 hover:text-indigo-600">
@@ -497,7 +497,7 @@ export default function EventDetailPage() {
               {/* Hobby Tag */}
               <div className="inline-flex items-center gap-2 bg-indigo-50 px-3 py-1.5 rounded-xl text-indigo-700 mb-4">
                 <span>{(hobby as any)?.icon}</span>
-                <span className="text-sm font-semibold">{(hobby as any)?.name || "Social Event"}</span>
+                <span className="text-sm font-semibold">{(hobby as any)?.name || t("socialEvent")}</span>
               </div>
               
               {/* Event Title */}
@@ -523,9 +523,9 @@ export default function EventDetailPage() {
 
               {/* Description */}
               <div className="mb-6">
-                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-2">About this Event</h3>
+                <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-2">{t("aboutEvent")}</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  {event.description || "No description provided."}
+                  {event.description || t("noDescription")}
                 </p>
               </div>
 
@@ -535,7 +535,7 @@ export default function EventDetailPage() {
                   <Navigation className="w-5 h-5" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wide mb-1">Location</h4>
+                  <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wide mb-1">{t("location")}</h4>
                   <p className="font-semibold text-gray-800">{location?.name}</p>
                   <p className="text-gray-500 text-sm">{location?.address || location?.city?.name || location?.city}</p>
                 </div>
@@ -552,7 +552,7 @@ export default function EventDetailPage() {
               <div className="flex justify-between items-center mb-6">
                 <h3 className="font-bold text-gray-900 flex items-center gap-2">
                   <Users className="w-5 h-5 text-indigo-500" />
-                  Participants
+                  {t("participants")}
                 </h3>
                 <span className={`px-2.5 py-1 rounded-lg text-xs font-bold ${isFull ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
                   {participantCount} / {maxParticipants}
@@ -585,7 +585,7 @@ export default function EventDetailPage() {
                         </Avatar>
                         <div className="min-w-0">
                           <p className="text-sm font-bold text-gray-800 truncate">{pUser.name}</p>
-                          <p className="text-xs text-gray-400 font-medium">Joined</p>
+                          <p className="text-xs text-gray-400 font-medium">{t("joined")}</p>
                         </div>
                       </div>
                     );
@@ -597,13 +597,13 @@ export default function EventDetailPage() {
                       <div className="w-10 h-10 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center">
                         <div className="w-2 h-2 rounded-full bg-gray-300"></div>
                       </div>
-                      <div className="text-sm font-medium text-gray-500">Open Spot</div>
+                      <div className="text-sm font-medium text-gray-500">{t("openSpot")}</div>
                    </div>
                  ))}
                  
                  {spotsLeft > 3 && (
                    <div className="text-center text-xs text-gray-400 font-medium py-2">
-                     + {spotsLeft - 3} more spots available
+                     {t("moreSpotsAvailable", { count: spotsLeft - 3 })}
                    </div>
                  )}
               </div>
@@ -652,8 +652,8 @@ export default function EventDetailPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Delete Event?</h3>
-              <p className="text-gray-500">This action cannot be undone. All participants will be notified.</p>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">{t("deleteEvent")}</h3>
+              <p className="text-gray-500">{t("deleteWarning")}</p>
             </div>
             <div className="flex gap-3">
               <Button
@@ -661,14 +661,14 @@ export default function EventDetailPage() {
                 disabled={deleting}
                 className="flex-1 rounded-full h-12 bg-gray-100 text-gray-700 hover:bg-gray-200 font-bold"
               >
-                Cancel
+                {t("cancel")}
               </Button>
               <Button
                 onClick={handleDeleteEvent}
                 disabled={deleting}
                 className="flex-1 rounded-full h-12 bg-red-500 text-white hover:bg-red-600 font-bold disabled:opacity-50"
               >
-                {deleting ? "Deleting..." : "Delete"}
+                {deleting ? t("deleting") : t("delete")}
               </Button>
             </div>
           </div>
@@ -680,7 +680,7 @@ export default function EventDetailPage() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-200 max-h-[80vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-bold text-gray-900">Invite Friends</h3>
+              <h3 className="text-2xl font-bold text-gray-900">{t("inviteFriends")}</h3>
               <button onClick={() => setShowInviteModal(false)} className="text-gray-400 hover:text-gray-600">
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -694,7 +694,7 @@ export default function EventDetailPage() {
               </div>
             ) : friends.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-gray-500">No friends available to invite</p>
+                <p className="text-gray-500">{t("noFriendsToInvite")}</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -709,14 +709,14 @@ export default function EventDetailPage() {
                       </Avatar>
                       <div>
                         <p className="font-bold text-gray-900">{friend.name}</p>
-                        <p className="text-sm text-gray-500">{friend.bio || "No bio"}</p>
+                        <p className="text-sm text-gray-500">{friend.bio || t("noBio")}</p>
                       </div>
                     </div>
                     <Button
                       onClick={() => handleInviteFriend(friend.id)}
                       className="rounded-full bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 text-sm font-bold"
                     >
-                      Invite
+                      {t("invite")}
                     </Button>
                   </div>
                 ))}
@@ -731,7 +731,7 @@ export default function EventDetailPage() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-200 max-h-[80vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-bold text-gray-900">Join Requests</h3>
+              <h3 className="text-2xl font-bold text-gray-900">{t("joinRequests")}</h3>
               <button onClick={() => setShowJoinRequestsModal(false)} className="text-gray-400 hover:text-gray-600">
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -745,7 +745,7 @@ export default function EventDetailPage() {
               </div>
             ) : joinRequests.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-gray-500">No pending requests</p>
+                <p className="text-gray-500">{t("noPendingRequests")}</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -771,13 +771,13 @@ export default function EventDetailPage() {
                         onClick={() => handleAcceptRequest(request.id)}
                         className="flex-1 rounded-full bg-green-500 text-white hover:bg-green-600 py-2 text-sm font-bold"
                       >
-                        Accept
+                        {t("accept")}
                       </Button>
                       <Button
                         onClick={() => handleRejectRequest(request.id)}
                         className="flex-1 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 py-2 text-sm font-bold"
                       >
-                        Reject
+                        {t("reject")}
                       </Button>
                     </div>
                   </div>
@@ -810,7 +810,7 @@ export default function EventDetailPage() {
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
-                <span className="hidden sm:inline">Requests</span>
+                <span className="hidden sm:inline">{t("requests")}</span>
               </Button>
               <Button
                 onClick={() => {
@@ -822,13 +822,13 @@ export default function EventDetailPage() {
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
-                <span className="hidden sm:inline">Invite</span>
+                <span className="hidden sm:inline">{t("invite")}</span>
               </Button>
               <Button
                 onClick={() => router.push(`/dashboard/create-invite?edit=${event.id}`)}
                 className="flex-1 rounded-full h-12 text-base font-bold shadow-lg transition-all bg-white text-gray-900 hover:bg-gray-50 hover:scale-[1.02]"
               >
-                Edit
+                {t("edit")}
               </Button>
               <Button
                 onClick={() => setShowDeleteDialog(true)}
@@ -851,14 +851,14 @@ export default function EventDetailPage() {
                 className="rounded-full h-12 px-4 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white border-0 flex items-center gap-2 transition-all font-bold text-sm shadow-lg hover:shadow-xl hover:scale-105"
               >
                 <MessageCircle className="w-5 h-5" />
-                <span className="hidden sm:inline">Chat</span>
+                <span className="hidden sm:inline">{t("chat")}</span>
               </Button>
               <Button
                 onClick={handleLeaveEvent}
                 disabled={joining}
                 className="flex-1 rounded-full h-12 text-base font-bold shadow-lg transition-all bg-gradient-to-r from-red-500 to-rose-600 text-white hover:from-red-600 hover:to-rose-700 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {joining ? "Leaving..." : "Leave Event"}
+                {joining ? t("leaving") : t("leave")}
               </Button>
             </>
           ) : isPendingRequest ? (
@@ -869,7 +869,7 @@ export default function EventDetailPage() {
               <svg className="w-5 h-5 mr-2 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Request Pending
+              {t("requestPending")}
             </Button>
           ) : (
             <Button
@@ -886,12 +886,12 @@ export default function EventDetailPage() {
               `}
             >
               {joining
-                ? "Sending Request..."
+                ? t("sendingRequest")
                 : isFull
-                ? "Squad Full"
+                ? t("full")
                 : event.status !== "OPEN"
-                ? "Event Closed"
-                : "Request to Join"}
+                ? t("closed")
+                : t("join")}
             </Button>
           )}
         </div>

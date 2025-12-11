@@ -122,7 +122,7 @@ export const getCityNameFromCoordinates = async (
 
   try {
     const response = await fetch(
-      `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${apiKey}&language=vi&pretty=1&no_annotations=1&limit=1`
+      `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${apiKey}&language=en&pretty=1&no_annotations=1&limit=1`
     );
 
     if (!response.ok) {

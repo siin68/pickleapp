@@ -214,26 +214,26 @@ export class NotificationService {
           message: `"${data.eventTitle}" has been updated`,
         },
       },
-      vi: {
+      ja: {
         FRIEND_REQUEST: {
-          title: "Lời mời kết bạn mới",
-          message: `${data.senderName} đã gửi lời mời kết bạn`,
+          title: "新しい友達リクエスト",
+          message: `${data.senderName} さんから友達リクエストが届きました`,
         },
         EVENT_INVITATION: {
-          title: "Lời mời tham gia sự kiện",
-          message: `${data.senderName} mời bạn tham gia "${data.eventTitle}"`,
+          title: "イベント招待",
+          message: `${data.senderName} さんが「${data.eventTitle}」に招待しました`,
         },
         EVENT_REMINDER: {
-          title: "Nhắc nhở sự kiện",
-          message: `"${data.eventTitle}" sẽ bắt đầu trong ${data.timeUntil}`,
+          title: "イベントリマインダー",
+          message: `「${data.eventTitle}」は${data.timeUntil}後に始まります`,
         },
         NEW_MESSAGE: {
-          title: "Tin nhắn mới",
+          title: "新しいメッセージ",
           message: `${data.senderName}: ${data.messagePreview}`,
         },
         EVENT_UPDATE: {
-          title: "Cập nhật sự kiện",
-          message: `"${data.eventTitle}" đã được cập nhật`,
+          title: "イベント更新",
+          message: `「${data.eventTitle}」が更新されました`,
         },
       },
     };

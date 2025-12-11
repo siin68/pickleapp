@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { signOut, useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Card, CardContent, Button, Avatar, AvatarImage, AvatarFallback } from '@/components/ui';
@@ -101,13 +101,12 @@ export default function SettingsPage() {
   const { data: session } = useSession();
   const router = useRouter();
   const pathname = usePathname();
-  const locale = (pathname ? pathname.split('/')[1] : '') || 'en';
+  const currentLocale = useLocale(); // Use next-intl's useLocale hook
 
   // State for user profile from API
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showLanguageMenu, setShowLanguageMenu] = useState(false);
 
   // Settings state
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -115,9 +114,6 @@ export default function SettingsPage() {
   const [pushNotifications, setPushNotifications] = useState(false);
   const [privateProfile, setPrivateProfile] = useState(false);
   const [showLocation, setShowLocation] = useState(true);
-
-  // Get current language
-  const currentLanguage = languages.find(l => l.code === locale) || languages[0];
 
   // Fetch user profile from API
   useEffect(() => {
@@ -151,10 +147,21 @@ export default function SettingsPage() {
   };
 
   const changeLanguage = (newLocale: string) => {
-    if (!pathname) return;
-    const newPath = pathname.replace(`/${locale}/`, `/${newLocale}/`);
-    router.push(newPath);
-    setShowLanguageMenu(false);
+    if (!pathname || newLocale === currentLocale) return;
+    
+    // Get the path without the locale prefix
+    const segments = pathname.split('/');
+    // Check if first segment after empty string is a locale
+    if (segments[1] === 'en' || segments[1] === 'ja') {
+      segments[1] = newLocale;
+    } else {
+      // No locale in path, add it
+      segments.splice(1, 0, newLocale);
+    }
+    const newPath = segments.join('/');
+    
+    // Use window.location for a full page reload to ensure locale change takes effect
+    window.location.href = newPath;
   };
 
   // Loading state
@@ -211,10 +218,10 @@ export default function SettingsPage() {
                  </div>
                  
                  <Button 
-                   onClick={() => router.push('/dashboard/settings/profile')}
+                   onClick={() => router.push('/settings/profile')}
                    className="rounded-full bg-gray-900 hover:bg-gray-800 text-white font-bold shadow-lg shadow-gray-200 hover:shadow-xl transition-all hover:-translate-y-0.5 px-6 mb-2"
                  >
-                   Edit Profile
+                   {t('editProfile')}
                  </Button>
                </div>
             </CardContent>
@@ -262,7 +269,7 @@ export default function SettingsPage() {
                        <button
                          onClick={() => changeLanguage('en')}
                          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm transition-all ${
-                           locale === 'en'
+                           currentLocale === 'en'
                              ? 'bg-white shadow-md text-rose-600'
                              : 'text-gray-500 hover:text-gray-700'
                          }`}
@@ -272,7 +279,7 @@ export default function SettingsPage() {
                        <button
                          onClick={() => changeLanguage('ja')}
                          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm transition-all ${
-                           locale === 'ja'
+                           currentLocale === 'ja'
                              ? 'bg-white shadow-md text-rose-600'
                              : 'text-gray-500 hover:text-gray-700'
                          }`}
@@ -339,7 +346,7 @@ export default function SettingsPage() {
                onClick={handleLogout}
                className="w-full h-14 rounded-2xl border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-bold text-lg flex items-center justify-center gap-2"
              >
-               <LogOutIcon className="w-5 h-5" /> Log Out
+               <LogOutIcon className="w-5 h-5" /> {t('logout')}
              </Button>
              
              <Button 
@@ -347,7 +354,7 @@ export default function SettingsPage() {
                className="w-full h-12 rounded-2xl text-red-400 hover:text-red-600 hover:bg-red-50 font-semibold text-sm flex items-center justify-center gap-2"
                onClick={() => alert("Delete account flow")}
              >
-               <TrashIcon className="w-4 h-4" /> Delete Account
+               <TrashIcon className="w-4 h-4" /> {t('deleteAccount')}
              </Button>
           </section>
 

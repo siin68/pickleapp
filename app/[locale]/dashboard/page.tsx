@@ -284,14 +284,14 @@ export default function DashboardHome() {
               </Avatar>
               <div className="space-y-2">
                 <h1 className="text-3xl md:text-5xl font-black tracking-tight drop-shadow-md">
-                  Hello, {session?.user?.name?.split(" ")[0] || "Friend"}
+                  {t("hello", { name: session?.user?.name || "Friend" })}
                 </h1>
                 <p className="text-pink-100 text-lg font-medium max-w-lg leading-relaxed">
-                  Ready to find your next adventure? There are{" "}
+                  {t("subtitle")}{" "}
                   <span className="font-bold text-white bg-white/20 px-2 py-0.5 rounded-full">
                     {openCount}
                   </span>{" "}
-                  live invites waiting for you.
+                  {t("liveInvites")}
                 </p>
               </div>
             </div>
@@ -302,7 +302,7 @@ export default function DashboardHome() {
                   {loading ? "..." : openCount}
                 </div>
                 <div className="text-xs font-bold uppercase tracking-wider text-pink-100">
-                  Active
+                  {t("active")}
                 </div>
               </div>
               <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 text-center min-w-[100px]">
@@ -310,7 +310,7 @@ export default function DashboardHome() {
                   {loading ? "..." : matchCount}
                 </div>
                 <div className="text-xs font-bold uppercase tracking-wider text-pink-100">
-                  Matches
+                  {t("matches")}
                 </div>
               </div>
             </div>
@@ -333,7 +333,7 @@ export default function DashboardHome() {
                   {tNav("openInvites")}
                 </h3>
                 <p className="text-sm text-gray-500 font-medium">
-                  Browse public meetups
+                  {t("browseMeetups")}
                 </p>
               </div>
             </CardContent>
@@ -355,7 +355,7 @@ export default function DashboardHome() {
                   {tNav("hobbyMatch")}
                 </h3>
                 <p className="text-sm text-gray-500 font-medium">
-                  Find interest twins
+                  {t("findInterestTwins")}
                 </p>
               </div>
             </CardContent>
@@ -377,7 +377,7 @@ export default function DashboardHome() {
                   {tNav("createInvite")}
                 </h3>
                 <p className="text-sm text-gray-300 font-medium">
-                  Host your own vibe
+                  {t("hostYourVibe")}
                 </p>
               </div>
             </CardContent>
@@ -387,14 +387,14 @@ export default function DashboardHome() {
         <div className="space-y-6">
           <div className="flex items-center justify-between px-2">
             <h2 className="text-2xl font-black text-gray-800 tracking-tight flex items-center gap-2">
-              <span className="text-2xl">🔥</span> Trending Nearby
+              <span className="text-2xl">🔥</span> {t("trendingNearby")}
             </h2>
             <Button
               variant="ghost"
               className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 font-bold rounded-full group"
               onClick={() => router.push("/dashboard/open-invites")}
             >
-              See All{" "}
+              {t("seeAll")}{" "}
               <ArrowRightIcon className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -450,7 +450,7 @@ export default function DashboardHome() {
                         <div className="absolute inset-0 bg-black/5"></div>
                         
                         <Badge className="absolute top-3 right-3 bg-white/90 text-indigo-600 font-bold text-[10px] px-2 py-0.5">
-                          {event.status === "OPEN" ? "Open" : "Closed"}
+                          {event.status === "OPEN" ? t("open") : t("closed")}
                         </Badge>
                       </div>
 
@@ -480,7 +480,7 @@ export default function DashboardHome() {
                                 {event.host.name.charAt(0).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
-                            <p className="text-xs text-gray-600 truncate">by <span className="font-bold text-gray-800">{event.host.name}</span></p>
+                            <p className="text-xs text-gray-600 truncate">{t("by")} <span className="font-bold text-gray-800">{event.host.name}</span></p>
                           </div>
                         )}
 
@@ -533,7 +533,7 @@ export default function DashboardHome() {
                               {participantCount}/{event.maxParticipants}
                             </span>
                             <span className="text-[10px] font-bold text-purple-600">
-                              {event.maxParticipants - participantCount} left
+                              {event.maxParticipants - participantCount} {t("left")}
                             </span>
                           </div>
                           <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
@@ -555,16 +555,16 @@ export default function DashboardHome() {
                 😴
               </div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">
-                It quiet... too quiet.
+                {t("noEventsTitle")}
               </h3>
               <p className="text-gray-500 mb-6">
-                No public events right now. Be the trailblazer!
+                {t("noEventsDesc")}
               </p>
               <Button
                 onClick={() => router.push("/dashboard/create-invite")}
                 className="rounded-full bg-gray-900 text-white px-8"
               >
-                Create First Event
+                {t("createFirstEvent")}
               </Button>
             </div>
           )}

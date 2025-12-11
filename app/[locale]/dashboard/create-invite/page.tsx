@@ -190,12 +190,12 @@ export default function CreateInvitePage() {
       if (result.success) {
         setFormData((prev) => ({ ...prev, image: result.data.url }));
       } else {
-        alert("Failed to upload image");
+        alert(t("failedToUpload"));
         removeImage();
       }
     } catch (error) {
       console.error("Upload error:", error);
-      alert("Failed to upload image");
+      alert(t("failedToUpload"));
       removeImage();
     } finally {
       setUploading(false);
@@ -246,7 +246,7 @@ export default function CreateInvitePage() {
       
       // If selecting and already at max (3), don't allow
       if (prev.hobbyIds.length >= 3) {
-        alert("You can select a maximum of 3 hobbies");
+        alert(t("max3Hobbies"));
         return prev;
       }
       
@@ -262,12 +262,12 @@ export default function CreateInvitePage() {
     e.preventDefault();
     const user = session?.user as any;
     if (!user?.id) {
-      alert("You must be logged in to create an event");
+      alert(t("mustBeLoggedIn"));
       return;
     }
 
     if (!formData.hobbyIds || formData.hobbyIds.length === 0) {
-      alert("Please select at least one vibe/hobby!");
+      alert(t("selectAtLeastOneHobby"));
       return;
     }
 
@@ -303,11 +303,11 @@ export default function CreateInvitePage() {
       if (result.success) {
         router.push("/dashboard/my-events");
       } else {
-        alert(result.error || `Failed to ${isEditMode ? 'update' : 'create'} event`);
+        alert(result.error || (isEditMode ? t("failedToUpdate") : t("failedToCreate")));
       }
     } catch (error) {
       console.error(`Error ${isEditMode ? 'updating' : 'creating'} event:`, error);
-      alert(`Failed to ${isEditMode ? 'update' : 'create'} event`);
+      alert(isEditMode ? t("failedToUpdate") : t("failedToCreate"));
     } finally {
       setSubmitting(false);
     }
@@ -323,13 +323,13 @@ export default function CreateInvitePage() {
       <div className="w-full max-w-4xl">
         <div className="mb-6 text-center">
           <span className="inline-block py-1 px-3 rounded-full bg-white/60 backdrop-blur-sm border border-rose-100 text-rose-500 text-[10px] font-bold tracking-widest uppercase mb-2 shadow-sm">
-            {isEditMode ? "✏️ Edit Your Event" : "✨ Design Your Date"}
+            {isEditMode ? `✏️ ${t("editYourEvent")}` : `✨ ${t("designYourDate")}`}
           </span>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight text-gray-900 drop-shadow-sm mb-2">
-            {isEditMode ? "Edit Event" : (t("title") || "Create Invite")}
+            {isEditMode ? t("editEvent") : t("title")}
           </h1>
           <p className="text-sm text-gray-500 font-medium max-w-xl mx-auto">
-            {isEditMode ? "Update your event details and settings." : "Find someone who loves what you love. Start by setting the scene."}
+            {isEditMode ? t("editSubtitle") : t("subtitle")}
           </p>
         </div>
 
@@ -352,7 +352,7 @@ export default function CreateInvitePage() {
                     <Image src={imagePreview} alt="Cover" fill className="object-cover" />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
                       <label htmlFor="image-upload" className="cursor-pointer opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-white/20 backdrop-blur-md border border-white/40 text-white px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2 hover:bg-white/30">
-                        <CameraIcon className="w-4 h-4" /> Change Photo
+                        <CameraIcon className="w-4 h-4" /> {t("changePhoto")}
                       </label>
                     </div>
                     <button type="button" onClick={removeImage} className="absolute top-3 right-3 p-1.5 bg-white/90 text-gray-800 rounded-full shadow-lg hover:bg-rose-50 hover:text-rose-500 transition-colors">
@@ -364,13 +364,13 @@ export default function CreateInvitePage() {
                     <div className={`w-14 h-14 rounded-2xl bg-white shadow-lg flex items-center justify-center mb-3 transition-transform duration-300 ${isDragging ? 'scale-110 text-rose-500' : 'text-gray-400'}`}>
                       <CameraIcon className="w-6 h-6" />
                     </div>
-                    <h3 className="text-base font-bold text-gray-800 mb-1">Add Cover Photo</h3>
-                    <p className="text-gray-400 text-xs mb-4 max-w-xs">Drag and drop or browse to upload.</p>
+                    <h3 className="text-base font-bold text-gray-800 mb-1">{t("addCoverPhoto")}</h3>
+                    <p className="text-gray-400 text-xs mb-4 max-w-xs">{t("dragDropOrBrowse")}</p>
                     <label 
                       htmlFor="image-upload" 
                       className="cursor-pointer bg-gray-900 text-white px-5 py-2 rounded-xl text-sm font-bold hover:bg-gray-800 hover:shadow-lg transition-all active:scale-95"
                     >
-                      {uploading ? "Uploading..." : "Browse Files"}
+                      {uploading ? t("uploading") : t("browseFiles")}
                     </label>
                   </div>
                 )}
@@ -389,10 +389,10 @@ export default function CreateInvitePage() {
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-base font-bold text-gray-800 flex items-center gap-2">
                       <HeartIcon className="w-4 h-4 text-rose-500" />
-                      What&apos;s the vibe?
+                      {t("whatsTheVibe")}
                     </h3>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-rose-400 bg-rose-50 px-2 py-0.5 rounded-full">
-                      Max 3
+                      {t("max3")}
                     </span>
                   </div>
                   
@@ -430,11 +430,11 @@ export default function CreateInvitePage() {
                     })}
                   </div>
                   {(!formData.hobbyIds || formData.hobbyIds.length === 0) && (
-                    <p className="mt-3 text-xs text-gray-400 italic">Select up to 3 interests to help find your match.</p>
+                    <p className="mt-3 text-xs text-gray-400 italic">{t("selectUpTo3")}</p>
                   )}
                   {formData.hobbyIds && formData.hobbyIds.length > 0 && (
                     <p className="mt-3 text-xs text-rose-500 font-medium">
-                      {formData.hobbyIds.length} of 3 selected
+                      {t("selected", { count: formData.hobbyIds.length })}
                     </p>
                   )}
                 </CardContent>
@@ -448,9 +448,9 @@ export default function CreateInvitePage() {
                   
                   <div className="space-y-3">
                     <div className="space-y-1.5">
-                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Title</label>
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">{t("titleLabel")}</label>
                       <Input
-                        placeholder="e.g. Sunday Brunch & Books"
+                        placeholder={t("titlePlaceholder")}
                         value={formData.title}
                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                         required
@@ -458,9 +458,9 @@ export default function CreateInvitePage() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Description</label>
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">{t("description")}</label>
                       <Textarea
-                        placeholder="Tell people what to expect..."
+                        placeholder={t("descriptionPlaceholder")}
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         required
@@ -472,12 +472,12 @@ export default function CreateInvitePage() {
 
                   <div className="bg-gray-50/80 rounded-2xl p-4 space-y-3">
                     <h4 className="font-bold text-gray-900 flex items-center gap-1.5 text-xs uppercase tracking-wide">
-                      <CalendarIcon className="w-3.5 h-3.5" /> The Plan
+                      <CalendarIcon className="w-3.5 h-3.5" /> {t("thePlan")}
                     </h4>
                     
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wider ml-1">Date</label>
+                        <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wider ml-1">{t("date")}</label>
                         <Input
                           type="date"
                           value={formData.date}
@@ -487,7 +487,7 @@ export default function CreateInvitePage() {
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wider ml-1">Time</label>
+                        <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wider ml-1">{t("time")}</label>
                         <Input
                           type="time"
                           value={formData.time}
@@ -499,7 +499,7 @@ export default function CreateInvitePage() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wider ml-1">Location</label>
+                      <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wider ml-1">{t("location")}</label>
                       <div className="relative">
                         <select
                           value={formData.locationId}
@@ -507,7 +507,7 @@ export default function CreateInvitePage() {
                           className="w-full h-9 appearance-none rounded-lg border-transparent bg-white shadow-sm px-3 text-xs font-medium text-gray-900 focus:border-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-100 transition-all cursor-pointer"
                           required
                         >
-                          <option value="">Select a spot...</option>
+                          <option value="">{t("selectLocation")}</option>
                           {locations.map((loc) => (
                             <option key={loc.id} value={loc.id}>{loc.name} • {loc.city.name}</option>
                           ))}
@@ -520,7 +520,7 @@ export default function CreateInvitePage() {
 
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wider ml-1">Max People</label>
+                        <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wider ml-1">{t("maxPeople")}</label>
                         <span className="text-sm font-bold text-rose-500 bg-rose-50 px-2.5 py-0.5 rounded-lg">{formData.maxParticipants}</span>
                       </div>
                       <input
@@ -548,7 +548,7 @@ export default function CreateInvitePage() {
                       onClick={() => router.back()}
                       className="flex-1 h-10 rounded-xl text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-100 font-bold"
                     >
-                      Cancel
+                      {t("cancel")}
                     </Button>
                     <Button
                       type="submit"
@@ -556,8 +556,8 @@ export default function CreateInvitePage() {
                       className="flex-[2] h-10 rounded-xl bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white font-bold text-sm shadow-lg shadow-rose-200 hover:shadow-xl hover:shadow-rose-300 transform transition-all hover:-translate-y-0.5 active:scale-95 disabled:opacity-70"
                     >
                       {submitting 
-                        ? (isEditMode ? "Updating..." : "Publishing...") 
-                        : (isEditMode ? "Update Event" : "Publish Invite")
+                        ? (isEditMode ? t("updating") : t("publishing")) 
+                        : (isEditMode ? t("updateEvent") : t("publishInvite"))
                       }
                     </Button>
                   </div>

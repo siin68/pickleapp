@@ -155,13 +155,13 @@ export default function OpenInvitesPage() {
       <div className="max-w-7xl mx-auto space-y-12">
         <div className="flex flex-col items-center text-center space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-100 text-rose-600 text-[11px] font-bold uppercase tracking-widest">
-            <SparklesIcon className="w-3 h-3" /> Discover
+            <SparklesIcon className="w-3 h-3" /> {t("discover")}
           </div>
           <h1 className="text-3xl md:text-5xl font-black tracking-tight text-gray-900">
-            Find Your Crowd
+            {t("findYourCrowd")}
           </h1>
           <p className="text-gray-500 text-lg max-w-lg mx-auto">
-            Join open invitations and meet people who love what you love.
+            {t("subtitle")}
           </p>
         </div>
 
@@ -172,7 +172,7 @@ export default function OpenInvitesPage() {
             <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-rose-500 transition-colors" />
             <input
               type="text"
-              placeholder="Search events by name..."
+              placeholder={t("searchPlaceholder")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-12 pr-12 py-4 bg-white border-2 border-gray-200 rounded-2xl text-gray-900 placeholder-gray-400 focus:border-rose-400 focus:ring-4 focus:ring-rose-100 transition-all duration-300 outline-none shadow-sm hover:shadow-md"
@@ -200,8 +200,8 @@ export default function OpenInvitesPage() {
                 <FilterIcon className={`w-5 h-5 ${selectedHobbies.length > 0 ? 'text-rose-500' : 'text-gray-400'}`} />
                 <span className="font-semibold">
                   {selectedHobbies.length > 0
-                    ? `${selectedHobbies.length} ${selectedHobbies.length === 1 ? 'hobby' : 'hobbies'} selected`
-                    : 'Filter by hobbies'}
+                    ? `${selectedHobbies.length} ${selectedHobbies.length === 1 ? t("hobbySelected") : t("hobbiesSelected")}`
+                    : t("filterByHobbies")}
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -213,7 +213,7 @@ export default function OpenInvitesPage() {
                     }}
                     className="px-3 py-1 text-xs font-bold text-rose-600 bg-white rounded-lg hover:bg-rose-50 transition-colors"
                   >
-                    Clear
+                    {t("clear")}
                   </button>
                 )}
                 <div className={`transform transition-transform duration-300 ${isFilterOpen ? 'rotate-180' : ''}`}>
@@ -230,7 +230,7 @@ export default function OpenInvitesPage() {
                 }`}
             >
               <div className="p-4 bg-gradient-to-r from-rose-50 to-purple-50 border-b border-gray-200">
-                <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide">Select Hobbies</h3>
+                <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide">{t("selectHobbies")}</h3>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-4 max-h-80 overflow-y-auto">
                 {HOBBIES.map((hobby) => {
@@ -261,7 +261,7 @@ export default function OpenInvitesPage() {
           {/* Active Filters Display */}
           {(searchTerm || selectedHobbies.length > 0) && (
             <div className="flex flex-wrap items-center gap-2 px-4">
-              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Active Filters:</span>
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t("activeFilters")}</span>
               {searchTerm && (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-rose-100 text-rose-700 rounded-lg text-xs font-bold">
                   <SearchIcon className="w-3 h-3" />
@@ -291,7 +291,7 @@ export default function OpenInvitesPage() {
                 onClick={clearFilters}
                 className="ml-auto text-xs font-bold text-gray-500 hover:text-rose-600 transition-colors underline"
               >
-                Clear All
+                {t("clearAll")}
               </button>
             </div>
           )}
@@ -384,7 +384,7 @@ export default function OpenInvitesPage() {
                             className="w-6 h-6 rounded-full object-cover ring-1 ring-gray-200"
                           />
                           <span className="text-xs text-gray-600 font-medium truncate">
-                            by {event.host.name}
+                            {t("by")} {event.host.name}
                           </span>
                         </div>
                       )}
@@ -423,13 +423,13 @@ export default function OpenInvitesPage() {
                         <div className="flex items-center gap-1.5 justify-end">
                           <div className="w-2 h-2 rounded-full bg-green-400" />
                           <span className="text-gray-700 font-bold">
-                            {spotsLeft} spots left
+                            {spotsLeft} {t("spotsLeft")}
                           </span>
                         </div>
                         <div className="flex items-center gap-1.5 col-span-2">
                           <MapPinIcon className="w-3.5 h-3.5 text-indigo-400" />
                           <span className="truncate">
-                            {cityName || locationName || "Online"}
+                            {cityName || locationName || t("online")}
                           </span>
                         </div>
                       </div>
@@ -446,8 +446,8 @@ export default function OpenInvitesPage() {
             </div>
             <p className="text-gray-500 font-medium">
               {searchTerm || selectedHobbies.length > 0
-                ? "No events found matching your filters."
-                : "No active invites found."}
+                ? t("noEventsFiltered")
+                : t("noActiveInvites")}
             </p>
             {searchTerm || selectedHobbies.length > 0 ? (
               <Button
@@ -455,7 +455,7 @@ export default function OpenInvitesPage() {
                 onClick={clearFilters}
                 className="text-rose-600 font-bold"
               >
-                Clear filters
+                {t("clearFilters")}
               </Button>
             ) : (
                 <Button
@@ -463,7 +463,7 @@ export default function OpenInvitesPage() {
                   onClick={() => router.push("/dashboard/create-invite")}
                   className="text-rose-600 font-bold"
                 >
-                  Create one?
+                  {t("createOne")}
                 </Button>
             )}
           </div>

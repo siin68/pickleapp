@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
 import { usePusherContext } from '@/contexts/SocketContext';
 import { useRouter } from '@/i18n/navigation';
 import { Bell } from 'lucide-react';
@@ -20,6 +21,7 @@ export default function NotificationBell() {
   const router = useRouter();
   const { data: session } = useSession();
   const { isConnected } = usePusherContext();
+  const t = useTranslations('notifications');
   
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -69,7 +71,7 @@ export default function NotificationBell() {
       const notification: Notification = {
         id: `like-${Date.now()}-${likeData.likerId}`,
         type: 'NEW_LIKE',
-        title: '💕 New Like',
+        title: t('newLike'),
         message: likeData.message,
         data: {
           likerId: likeData.likerId,
@@ -97,7 +99,7 @@ export default function NotificationBell() {
       const notification: Notification = {
         id: `match-${Date.now()}-${matchData.matchedUserId}`,
         type: 'MATCH_FOUND',
-        title: '🎉 It\'s a Match!',
+        title: t('newMatch'),
         message: matchData.message,
         data: {
           matchedUserId: matchData.matchedUserId,
@@ -128,7 +130,7 @@ export default function NotificationBell() {
       window.removeEventListener('new-like' as any, handleNewLike as any);
       window.removeEventListener('match-found' as any, handleMatchFound as any);
     };
-  }, []);
+  }, [t]);
 
   const markAsRead = async (notificationId: string) => {
     try {
@@ -239,9 +241,9 @@ export default function NotificationBell() {
           <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 max-h-[500px] flex flex-col">
             <div className="p-4 border-b border-gray-200 flex items-center justify-between">
               <div>
-                <h3 className="font-bold text-gray-900">Notifications</h3>
+                <h3 className="font-bold text-gray-900">{t('title')}</h3>
                 <p className="text-xs text-gray-500">
-                  {unreadCount} unread
+                  {t('unread', { count: unreadCount })}
                 </p>
               </div>
               
@@ -250,7 +252,7 @@ export default function NotificationBell() {
                   onClick={clearAll}
                   className="text-xs text-rose-500 hover:text-rose-600 font-semibold"
                 >
-                  Clear all
+                  {t('clearAll')}
                 </button>
               )}
             </div>
@@ -259,7 +261,7 @@ export default function NotificationBell() {
               {notifications.length === 0 ? (
                 <div className="p-8 text-center text-gray-500">
                   <Bell className="w-12 h-12 mx-auto mb-2 opacity-20" />
-                  <p className="text-sm">No notifications yet</p>
+                  <p className="text-sm">{t('noNotifications')}</p>
                 </div>
               ) : (
                 notifications.map((notification) => (

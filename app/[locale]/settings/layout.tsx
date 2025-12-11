@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
 import React, { useState } from "react";
 import Image from "next/image";
 import {
@@ -18,7 +17,7 @@ import {
 } from "@/icons/icons";
 import NotificationBell from "@/components/NotificationBell";
 
-export default function DashboardLayout({
+export default function SettingsLayout({
   children,
   params,
 }: {
@@ -109,7 +108,7 @@ export default function DashboardLayout({
               </div>
             </div>
             <span className="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-purple-800 to-rose-700 tracking-tight">
-              RND APP
+              Pickle Match
             </span>
           </div>
           <button
@@ -154,10 +153,10 @@ export default function DashboardLayout({
           })}
         </nav>
 
-    <div className="hidden md:flex items-center">
-              {/* Real-time Notification Bell */}
-              <NotificationBell />
-            </div>
+        <div className="hidden md:flex items-center">
+          {/* Real-time Notification Bell */}
+          <NotificationBell />
+        </div>
       </aside>
 
       <div className="hidden md:flex fixed bottom-6 left-0 right-0 z-50 justify-center px-4 pointer-events-none">
