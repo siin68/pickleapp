@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
 
     // Emit real-time notification via Socket.IO
     try {
-      const { socketEmit } = await import('@/lib/socket');
+      const { socketEmit } = await import('@/lib/pusher');
 
       // Send notification to receiver
       socketEmit.toUser(receiverId, 'notification', {

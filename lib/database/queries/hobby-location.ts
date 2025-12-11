@@ -26,7 +26,7 @@ export const hobbyQueries = {
   // Get hobby with stats
   async getHobbyWithStats(hobbyId: string) {
     return prisma.hobby.findUnique({
-      where: { id: hobbyId },
+      where: { id: parseInt(hobbyId, 10) },
       include: {
         _count: {
           select: { users: true, events: true },
@@ -50,7 +50,7 @@ export const locationQueries = {
   async getLocationsByCity(cityId: string) {
     return prisma.location.findMany({
       where: {
-        cityId,
+        cityId: parseInt(cityId, 10),
         isActive: true,
       },
       include: { city: true },
@@ -69,7 +69,7 @@ export const locationQueries = {
   // Get city with locations
   async getCityWithLocations(cityId: string) {
     return prisma.city.findUnique({
-      where: { id: cityId },
+      where: { id: parseInt(cityId, 10) },
       include: {
         locations: {
           where: { isActive: true },

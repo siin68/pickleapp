@@ -6,8 +6,9 @@ import prisma from "../../prisma";
 export const socialQueries = {
   // Get friend suggestions
   async getFriendSuggestions(userId: string, limit: number = 10) {
+    const userIdNum = parseInt(userId, 10);
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: userIdNum },
       include: { hobbies: true, locations: true },
     });
 
@@ -18,7 +19,7 @@ export const socialQueries = {
     return prisma.user.findMany({
       where: {
         AND: [
-          { id: { not: userId } },
+          { id: { not: userIdNum } },
           { isActive: true },
           {
             hobbies: {
@@ -28,10 +29,10 @@ export const socialQueries = {
           {
             NOT: {
               OR: [
-                { friendships1: { some: { user2Id: userId } } },
-                { friendships2: { some: { user1Id: userId } } },
-                { sentFriendRequests: { some: { receiverId: userId } } },
-                { receivedFriendRequests: { some: { senderId: userId } } },
+                { friendships1: { some: { user2Id: userIdNum } } },
+                { friendships2: { some: { user1Id: userIdNum } } },
+                { sentFriendRequests: { some: { receiverId: userIdNum } } },
+                { receivedFriendRequests: { some: { senderId: userIdNum } } },
               ],
             },
           },
@@ -49,9 +50,10 @@ export const socialQueries = {
 
   // Get user's friends
   async getUserFriends(userId: string) {
+    const userIdNum = parseInt(userId, 10);
     const friendships = await prisma.friendship.findMany({
       where: {
-        OR: [{ user1Id: userId }, { user2Id: userId }],
+        OR: [{ user1Id: userIdNum }, { user2Id: userIdNum }],
       },
       include: {
         user1: {
@@ -76,7 +78,7 @@ export const socialQueries = {
     });
 
     return friendships.map((friendship) =>
-      friendship.user1Id === userId ? friendship.user2 : friendship.user1
+      friendship.user1Id === userIdNum ? friendship.user2 : friendship.user1
     );
   },
 
@@ -86,12 +88,14 @@ export const socialQueries = {
     receiverId: string,
     message?: string
   ) {
+    const senderIdNum = parseInt(senderId, 10);
+    const receiverIdNum = parseInt(receiverId, 10);
     // Check if already friends or request exists
     const existingRelation = await prisma.friendRequest.findFirst({
       where: {
         OR: [
-          { senderId, receiverId },
-          { senderId: receiverId, receiverId: senderId },
+          { senderId: senderIdNum, receiverId: receiverIdNum },
+          { senderId: receiverIdNum, receiverId: senderIdNum },
         ],
       },
     });
@@ -104,8 +108,8 @@ export const socialQueries = {
 
     return prisma.friendRequest.create({
       data: {
-        senderId,
-        receiverId,
+        senderId: senderIdNum,
+        receiverId: receiverIdNum,
         message,
       },
       include: {
@@ -117,8 +121,9 @@ export const socialQueries = {
 
   // Accept friend request
   async acceptFriendRequest(requestId: string) {
+    const requestIdNum = parseInt(requestId, 10);
     const request = await prisma.friendRequest.findUnique({
-      where: { id: requestId },
+      where: { id: requestIdNum },
     });
 
     if (!request || request.status !== "PENDING") {
@@ -135,7 +140,7 @@ export const socialQueries = {
 
     // Update request status
     return prisma.friendRequest.update({
-      where: { id: requestId },
+      where: { id: requestIdNum },
       data: {
         status: "ACCEPTED",
         respondedAt: new Date(),
@@ -145,9 +150,10 @@ export const socialQueries = {
 
   // Get pending friend requests
   async getPendingFriendRequests(userId: string) {
+    const userIdNum = parseInt(userId, 10);
     return prisma.friendRequest.findMany({
       where: {
-        receiverId: userId,
+        receiverId: userIdNum,
         status: "PENDING",
       },
       include: {

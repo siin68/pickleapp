@@ -156,7 +156,7 @@ export async function POST(
     });
 
     try {
-      const { socketEmit } = await import('@/lib/socket');
+      const { socketEmit } = await import('@/lib/pusher');
       const hostUserId = event.host.id.toString();
       
       await socketEmit.toUser(hostUserId, 'notification', {

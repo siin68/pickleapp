@@ -6,17 +6,18 @@ import prisma from "../../prisma";
 export const analyticsQueries = {
   // Get user activity stats
   async getUserStats(userId: string) {
+    const userIdNum = parseInt(userId, 10);
     const [eventsHosted, eventsAttended, averageRating, totalFriends] =
       await Promise.all([
-        prisma.event.count({ where: { hostId: userId } }),
-        prisma.eventParticipant.count({ where: { userId } }),
+        prisma.event.count({ where: { hostId: userIdNum } }),
+        prisma.eventParticipant.count({ where: { userId: userIdNum } }),
         prisma.review.aggregate({
-          where: { revieweeId: userId },
+          where: { revieweeId: userIdNum },
           _avg: { rating: true },
         }),
         prisma.friendship.count({
           where: {
-            OR: [{ user1Id: userId }, { user2Id: userId }],
+            OR: [{ user1Id: userIdNum }, { user2Id: userIdNum }],
           },
         }),
       ]);
@@ -88,26 +89,27 @@ export const analyticsQueries = {
 
   // Get user activity over time
   async getUserActivity(userId: string, days: number = 30) {
+    const userIdNum = parseInt(userId, 10);
     const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
     const [events, messages, reviews] = await Promise.all([
       prisma.event.findMany({
         where: {
-          hostId: userId,
+          hostId: userIdNum,
           createdAt: { gte: startDate },
         },
         select: { createdAt: true },
       }),
       prisma.message.findMany({
         where: {
-          senderId: userId,
+          senderId: userIdNum,
           timestamp: { gte: startDate },
         },
         select: { timestamp: true },
       }),
       prisma.review.findMany({
         where: {
-          reviewerId: userId,
+          reviewerId: userIdNum,
           createdAt: { gte: startDate },
         },
         select: { createdAt: true },

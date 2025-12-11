@@ -1,66 +1,71 @@
 "use client";
 
-import { useEffect } from 'react';
-import { useSocket } from '@/contexts/SocketContext';
+import { useEffect, useCallback } from 'react';
+import { usePusherContext } from '@/contexts/SocketContext';
 import { useSession } from 'next-auth/react';
+import Pusher, { Channel } from 'pusher-js';
 
 /**
- * Hook to automatically join user's personal room on socket connect
+ * Hook to get the Pusher instance and subscribe to user's private channel
  */
 export const useSocketUser = () => {
-  const { socket, isConnected } = useSocket();
+  const { pusher, isConnected } = usePusherContext();
   const { data: session } = useSession();
 
   useEffect(() => {
-    if (socket && isConnected && session?.user?.id) {
-      socket.emit('join', session.user.id);
-      console.log(`👤 Joined user room: ${session.user.id}`);
+    if (pusher && isConnected && session?.user?.id) {
+      const channelName = `private-user-${session.user.id}`;
+      // Subscribe to user channel (SocketListener handles this globally)
+      pusher.subscribe(channelName);
+      console.log(`👤 Subscribed to user channel: ${channelName}`);
     }
-  }, [socket, isConnected, session?.user?.id]);
+  }, [pusher, isConnected, session?.user?.id]);
 
-  return { socket, isConnected };
+  return { pusher, isConnected };
 };
 
 /**
- * Hook to join/leave an event room
+ * Hook to subscribe to an event's presence channel
  */
 export const useSocketEvent = (eventId: string | null) => {
-  const { socket, isConnected } = useSocket();
+  const { pusher, isConnected } = usePusherContext();
 
   useEffect(() => {
-    if (socket && isConnected && eventId) {
-      socket.emit('join-event', eventId);
-      console.log(`📅 Joined event room: ${eventId}`);
+    if (pusher && isConnected && eventId) {
+      const channelName = `presence-event-${eventId}`;
+      const channel = pusher.subscribe(channelName);
+      console.log(`📅 Subscribed to event channel: ${channelName}`);
 
       return () => {
-        socket.emit('leave-event', eventId);
-        console.log(`👋 Left event room: ${eventId}`);
+        pusher.unsubscribe(channelName);
+        console.log(`👋 Unsubscribed from event channel: ${channelName}`);
       };
     }
-  }, [socket, isConnected, eventId]);
+  }, [pusher, isConnected, eventId]);
 
-  return { socket, isConnected };
+  return { pusher, isConnected };
 };
 
 /**
- * Hook to join/leave a chat room
+ * Hook to subscribe to a chat's private channel
  */
 export const useSocketChat = (chatId: string | null) => {
-  const { socket, isConnected } = useSocket();
+  const { pusher, isConnected } = usePusherContext();
 
   useEffect(() => {
-    if (socket && isConnected && chatId) {
-      socket.emit('join-chat', chatId);
-      console.log(`💬 Joined chat room: ${chatId}`);
+    if (pusher && isConnected && chatId) {
+      const channelName = `private-chat-${chatId}`;
+      pusher.subscribe(channelName);
+      console.log(`💬 Subscribed to chat channel: ${channelName}`);
 
       return () => {
-        socket.emit('leave-chat', chatId);
-        console.log(`👋 Left chat room: ${chatId}`);
+        pusher.unsubscribe(channelName);
+        console.log(`👋 Unsubscribed from chat channel: ${channelName}`);
       };
     }
-  }, [socket, isConnected, chatId]);
+  }, [pusher, isConnected, chatId]);
 
-  return { socket, isConnected };
+  return { pusher, isConnected };
 };
 
 /**
@@ -70,19 +75,23 @@ export const useSocketMessages = (
   chatId: string | null,
   onMessage: (message: any) => void
 ) => {
-  const { socket, isConnected } = useSocketChat(chatId);
+  const { pusher, isConnected } = usePusherContext();
 
   useEffect(() => {
-    if (socket && isConnected) {
-      socket.on('new-message', onMessage);
+    if (!pusher || !isConnected || !chatId) return;
 
-      return () => {
-        socket.off('new-message', onMessage);
-      };
-    }
-  }, [socket, isConnected, onMessage]);
+    const channelName = `private-chat-${chatId}`;
+    const channel = pusher.subscribe(channelName);
+    
+    channel.bind('new-message', onMessage);
 
-  return { socket, isConnected };
+    return () => {
+      channel.unbind('new-message', onMessage);
+      // Don't unsubscribe - let useSocketChat manage that
+    };
+  }, [pusher, isConnected, chatId, onMessage]);
+
+  return { pusher, isConnected };
 };
 
 /**
@@ -92,25 +101,37 @@ export const useSocketTyping = (
   chatId: string | null,
   onTyping: (data: { userId: string; isTyping: boolean }) => void
 ) => {
-  const { socket, isConnected } = useSocketChat(chatId);
+  const { pusher, isConnected } = usePusherContext();
 
   useEffect(() => {
-    if (socket && isConnected) {
-      socket.on('user-typing', onTyping);
+    if (!pusher || !isConnected || !chatId) return;
 
-      return () => {
-        socket.off('user-typing', onTyping);
-      };
+    const channelName = `private-chat-${chatId}`;
+    const channel = pusher.subscribe(channelName);
+    
+    channel.bind('user-typing', onTyping);
+
+    return () => {
+      channel.unbind('user-typing', onTyping);
+    };
+  }, [pusher, isConnected, chatId, onTyping]);
+
+  // For Pusher, typing is triggered via API, not client events
+  const sendTyping = useCallback(async (userId: string, isTyping: boolean) => {
+    if (chatId) {
+      try {
+        await fetch('/api/chats/typing', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chatId, userId, isTyping }),
+        });
+      } catch (error) {
+        console.error('Failed to send typing indicator:', error);
+      }
     }
-  }, [socket, isConnected, onTyping]);
+  }, [chatId]);
 
-  const sendTyping = (userId: string, isTyping: boolean) => {
-    if (socket && chatId) {
-      socket.emit('typing', { chatId, userId, isTyping });
-    }
-  };
-
-  return { sendTyping, socket, isConnected };
+  return { sendTyping, pusher, isConnected };
 };
 
 /**
@@ -119,17 +140,21 @@ export const useSocketTyping = (
 export const useSocketNotifications = (
   onNotification: (notification: any) => void
 ) => {
-  const { socket, isConnected } = useSocketUser();
+  const { pusher, isConnected } = useSocketUser();
+  const { data: session } = useSession();
 
   useEffect(() => {
-    if (socket && isConnected) {
-      socket.on('notification', onNotification);
+    if (!pusher || !isConnected || !session?.user?.id) return;
 
-      return () => {
-        socket.off('notification', onNotification);
-      };
-    }
-  }, [socket, isConnected, onNotification]);
+    const channelName = `private-user-${session.user.id}`;
+    const channel = pusher.subscribe(channelName);
+    
+    channel.bind('notification', onNotification);
 
-  return { socket, isConnected };
+    return () => {
+      channel.unbind('notification', onNotification);
+    };
+  }, [pusher, isConnected, session?.user?.id, onNotification]);
+
+  return { pusher, isConnected };
 };

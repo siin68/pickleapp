@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
-import { useSocket } from '@/contexts/SocketContext';
+import { usePusherContext } from '@/contexts/SocketContext';
 import { useRouter } from '@/i18n/navigation';
 import { Bell } from 'lucide-react';
 
@@ -19,7 +19,7 @@ interface Notification {
 export default function NotificationBell() {
   const router = useRouter();
   const { data: session } = useSession();
-  const { isConnected } = useSocket();
+  const { isConnected } = usePusherContext();
   
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpen, setIsOpen] = useState(false);

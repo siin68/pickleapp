@@ -21,8 +21,15 @@ export async function POST(
       );
     }
 
-    const requestId = params.id;
-    const userId = session.user.id;
+    const requestId = parseInt(params.id, 10);
+    const userId = typeof session.user.id === 'string' ? parseInt(session.user.id, 10) : session.user.id;
+
+    if (isNaN(requestId)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid request ID' },
+        { status: 400 }
+      );
+    }
 
     // Get friend request
     const friendRequest = await prisma.friendRequest.findUnique({

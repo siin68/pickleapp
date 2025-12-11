@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useSocket } from '@/contexts/SocketContext';
+import { usePusherContext } from '@/contexts/SocketContext';
 import { Avatar, AvatarImage, AvatarFallback, Button } from '@/components/ui';
 import { Users, Check, X, UserPlus } from 'lucide-react';
 
@@ -28,7 +28,7 @@ interface FriendRequest {
 
 export default function FriendRequests() {
   const { data: session } = useSession();
-  const { socket, isConnected } = useSocket();
+  const { pusher, isConnected } = usePusherContext();
 
   const [requests, setRequests] = useState<FriendRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,33 +42,33 @@ export default function FriendRequests() {
     }
   }, [session?.user?.id]);
 
-  // Listen for real-time friend requests
+  // Listen for real-time friend requests via Pusher
   useEffect(() => {
-    if (!socket || !isConnected) return;
+    if (!pusher || !isConnected || !session?.user?.id) return;
 
-    if (session?.user?.id) {
-      socket.emit('join', session.user.id);
-    }
+    const channelName = `private-user-${session.user.id}`;
+    const channel = pusher.subscribe(channelName);
 
     // Listen for new friend requests
-    socket.on('friend-request-received', ({ friendRequest }) => {
-      
+    const handleFriendRequestReceived = ({ friendRequest }: { friendRequest: FriendRequest }) => {
       setRequests(prev => [friendRequest, ...prev]);
-    });
+    };
 
-    // Listen for accepted friend requests (if user sent request)
-    socket.on('friend-request-accepted', ({ friendRequestId }) => {
+    // Listen for accepted friend requests
+    const handleFriendRequestAccepted = ({ friendRequestId }: { friendRequestId: string }) => {
       console.log('✅ Friend request accepted:', friendRequestId);
-      
-      // Remove from list if it was in sent requests
       setRequests(prev => prev.filter(r => r.id !== friendRequestId));
-    });
+    };
+
+    channel.bind('friend-request-received', handleFriendRequestReceived);
+    channel.bind('friend-request-accepted', handleFriendRequestAccepted);
 
     return () => {
-      socket.off('friend-request-received');
-      socket.off('friend-request-accepted');
+      channel.unbind('friend-request-received', handleFriendRequestReceived);
+      channel.unbind('friend-request-accepted', handleFriendRequestAccepted);
+      // Don't unsubscribe here as SocketListener manages the main subscription
     };
-  }, [socket, isConnected, session?.user?.id]);
+  }, [pusher, isConnected, session?.user?.id]);
 
   const fetchFriendRequests = async () => {
     try {

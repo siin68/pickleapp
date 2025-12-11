@@ -84,7 +84,7 @@ export const authOptions: NextAuthOptions = {
           }
         } catch (error) {
           console.error("Error fetching user session:", error);
-          session.user.id = token.sub;
+          session.user.id = token.sub ? parseInt(token.sub, 10) : undefined;
         }
       }
       return session;

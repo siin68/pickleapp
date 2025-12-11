@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth.config";
-import { socketEmit } from "@/lib/socket";
+import { socketEmit } from "@/lib/pusher";
 
 export async function POST(
   request: NextRequest,

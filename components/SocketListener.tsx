@@ -2,53 +2,27 @@
 
 import { useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
-import { useSocket } from '@/contexts/SocketContext';
-
+import { usePusherContext } from '@/contexts/SocketContext';
 
 export default function SocketListener() {
   const { data: session } = useSession();
-  const { socket, isConnected } = useSocket();
+  const { pusher, isConnected } = usePusherContext();
 
-  const joinRoom = useCallback(() => {
-    if (!socket || !isConnected || !session?.user?.id) {
-      return;
-    }
-    socket.emit('join', String(session.user.id));
-  }, [socket, isConnected, session?.user?.id]);
-
+  // Subscribe to user's private channel when connected
   useEffect(() => {
-    if (!socket || !isConnected || !session?.user?.id) {
+    if (!pusher || !isConnected || !session?.user?.id) {
       return;
     }
 
-    joinRoom();
+    const userId = String(session.user.id);
+    const channelName = `private-user-${userId}`;
+    
+    // Subscribe to user's private channel
+    const channel = pusher.subscribe(channelName);
 
-    const handleFocus = () => {
-      if (socket.connected) {
-        joinRoom();
-      }
-    };
-
-    const handleReconnect = () => {
-      joinRoom();
-    };
-
-    window.addEventListener('focus', handleFocus);
-    window.addEventListener('socket-reconnected', handleReconnect);
-
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-      window.removeEventListener('socket-reconnected', handleReconnect);
-    };
-  }, [socket, isConnected, session?.user?.id, joinRoom]);
-
-  useEffect(() => {
-    if (!socket || !isConnected) {
-      return;
-    }
-
-    const handleNotification = (notification: any) => {
-      window.dispatchEvent(new CustomEvent('socket-notification', { detail: notification }));
+    // Event handlers that dispatch to window for other components to listen
+    const handleNotification = (data: any) => {
+      window.dispatchEvent(new CustomEvent('socket-notification', { detail: data }));
     };
 
     const handleEventJoined = (data: any) => {
@@ -79,12 +53,10 @@ export default function SocketListener() {
       window.dispatchEvent(new CustomEvent('new-message', { detail: data }));
     };
 
-    // Event join request handlers (for host to receive join requests)
     const handleEventJoinRequest = (data: any) => {
       window.dispatchEvent(new CustomEvent('event-join-request', { detail: data }));
     };
 
-    // Event request accepted/rejected handlers (for user to receive response)
     const handleEventRequestAccepted = (data: any) => {
       window.dispatchEvent(new CustomEvent('event-request-accepted', { detail: data }));
     };
@@ -101,36 +73,39 @@ export default function SocketListener() {
       window.dispatchEvent(new CustomEvent('match-found', { detail: data }));
     };
 
-    socket.on('notification', handleNotification);
-    socket.on('event-joined', handleEventJoined);
-    socket.on('event-left', handleEventLeft);
-    socket.on('friend-request-received', handleFriendRequestReceived);
-    socket.on('friend-request-accepted', handleFriendRequestAccepted);
-    socket.on('chat-member-joined', handleChatMemberJoined);
-    socket.on('chat-member-left', handleChatMemberLeft);
-    socket.on('new-message', handleNewMessage);
-    socket.on('event-join-request', handleEventJoinRequest);
-    socket.on('event-request-accepted', handleEventRequestAccepted);
-    socket.on('event-request-rejected', handleEventRequestRejected);
-    socket.on('new-like', handleNewLike);
-    socket.on('match-found', handleMatchFound);
+    // Bind all event handlers to the channel
+    channel.bind('notification', handleNotification);
+    channel.bind('event-joined', handleEventJoined);
+    channel.bind('event-left', handleEventLeft);
+    channel.bind('friend-request-received', handleFriendRequestReceived);
+    channel.bind('friend-request-accepted', handleFriendRequestAccepted);
+    channel.bind('chat-member-joined', handleChatMemberJoined);
+    channel.bind('chat-member-left', handleChatMemberLeft);
+    channel.bind('new-message', handleNewMessage);
+    channel.bind('event-join-request', handleEventJoinRequest);
+    channel.bind('event-request-accepted', handleEventRequestAccepted);
+    channel.bind('event-request-rejected', handleEventRequestRejected);
+    channel.bind('new-like', handleNewLike);
+    channel.bind('match-found', handleMatchFound);
 
+    // Cleanup: unbind all handlers and unsubscribe
     return () => {
-      socket.off('notification', handleNotification);
-      socket.off('event-joined', handleEventJoined);
-      socket.off('event-left', handleEventLeft);
-      socket.off('friend-request-received', handleFriendRequestReceived);
-      socket.off('friend-request-accepted', handleFriendRequestAccepted);
-      socket.off('chat-member-joined', handleChatMemberJoined);
-      socket.off('chat-member-left', handleChatMemberLeft);
-      socket.off('new-message', handleNewMessage);
-      socket.off('event-join-request', handleEventJoinRequest);
-      socket.off('event-request-accepted', handleEventRequestAccepted);
-      socket.off('event-request-rejected', handleEventRequestRejected);
-      socket.off('new-like', handleNewLike);
-      socket.off('match-found', handleMatchFound);
+      channel.unbind('notification', handleNotification);
+      channel.unbind('event-joined', handleEventJoined);
+      channel.unbind('event-left', handleEventLeft);
+      channel.unbind('friend-request-received', handleFriendRequestReceived);
+      channel.unbind('friend-request-accepted', handleFriendRequestAccepted);
+      channel.unbind('chat-member-joined', handleChatMemberJoined);
+      channel.unbind('chat-member-left', handleChatMemberLeft);
+      channel.unbind('new-message', handleNewMessage);
+      channel.unbind('event-join-request', handleEventJoinRequest);
+      channel.unbind('event-request-accepted', handleEventRequestAccepted);
+      channel.unbind('event-request-rejected', handleEventRequestRejected);
+      channel.unbind('new-like', handleNewLike);
+      channel.unbind('match-found', handleMatchFound);
+      pusher.unsubscribe(channelName);
     };
-  }, [socket, isConnected]);
+  }, [pusher, isConnected, session?.user?.id]);
 
   return null;
 }

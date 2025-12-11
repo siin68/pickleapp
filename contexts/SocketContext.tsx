@@ -1,102 +1,103 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode, useRef } from 'react';
-import { io, Socket } from 'socket.io-client';
-import { ServerToClientEvents, ClientToServerEvents } from '@/types/socket';
+import Pusher from 'pusher-js';
 
-type SocketIOClient = Socket<ServerToClientEvents, ClientToServerEvents>;
-
-interface SocketContextType {
-  socket: SocketIOClient | null;
+interface PusherContextType {
+  pusher: Pusher | null;
   isConnected: boolean;
 }
 
-const SocketContext = createContext<SocketContextType>({
-  socket: null,
+const PusherContext = createContext<PusherContextType>({
+  pusher: null,
   isConnected: false,
 });
 
-export const useSocket = () => {
-  const context = useContext(SocketContext);
+export const usePusherContext = () => {
+  const context = useContext(PusherContext);
   if (!context) {
-    throw new Error('useSocket must be used within SocketProvider');
+    throw new Error('usePusherContext must be used within PusherProvider');
   }
   return context;
 };
 
-interface SocketProviderProps {
+interface PusherProviderProps {
   children: ReactNode;
 }
 
-let globalSocket: SocketIOClient | null = null;
+let globalPusher: Pusher | null = null;
 
-export const SocketProvider = ({ children }: SocketProviderProps) => {
-  const [socket, setSocket] = useState<SocketIOClient | null>(null);
+export const PusherProvider = ({ children }: PusherProviderProps) => {
+  const [pusher, setPusher] = useState<Pusher | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const initialized = useRef(false);
 
   useEffect(() => {
-    if (initialized.current && globalSocket?.connected) {
-      setSocket(globalSocket);
-      setIsConnected(true);
+    // Return early if already initialized
+    if (initialized.current && globalPusher) {
+      setPusher(globalPusher);
+      setIsConnected(globalPusher.connection.state === 'connected');
       return;
     }
     initialized.current = true;
 
-    if (globalSocket && !globalSocket.connected) {
-      globalSocket.removeAllListeners();
-      globalSocket.disconnect();
-      globalSocket = null;
+    // Disconnect existing instance if any
+    if (globalPusher) {
+      globalPusher.disconnect();
+      globalPusher = null;
     }
 
-    const socketInstance: SocketIOClient = io(process.env.NEXT_PUBLIC_SITE_URL || '', {
-      path: '/api/socket/io',
-      addTrailingSlash: false,
-      reconnection: true,
-      reconnectionDelay: 500,
-      reconnectionDelayMax: 2000,
-      reconnectionAttempts: Infinity,
-      timeout: 20000,
-      autoConnect: true,
+    // Create new Pusher instance
+    const pusherInstance = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
+      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER || 'ap1',
+      authEndpoint: '/api/pusher/auth',
+      auth: {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      },
     });
 
-    socketInstance.on('connect', () => {
+    // Connection event handlers
+    pusherInstance.connection.bind('connected', () => {
+      console.log('✅ Pusher connected');
       setIsConnected(true);
     });
 
-    socketInstance.io.on('reconnect', () => {
-      setIsConnected(true);
-      window.dispatchEvent(new CustomEvent('socket-reconnected'));
-    });
-
-    socketInstance.on('disconnect', (reason) => {
-      setIsConnected(false);
-      if (reason === 'io server disconnect') {
-        socketInstance.connect();
-      }
-    });
-
-    socketInstance.on('connect_error', () => {
+    pusherInstance.connection.bind('disconnected', () => {
+      console.log('❌ Pusher disconnected');
       setIsConnected(false);
     });
 
-    globalSocket = socketInstance;
-    setSocket(socketInstance);
+    pusherInstance.connection.bind('error', (err: any) => {
+      console.error('❌ Pusher error:', err);
+      setIsConnected(false);
+    });
 
-    const handleUnload = () => {
-      globalSocket?.disconnect();
-      globalSocket = null;
-    };
-    window.addEventListener('beforeunload', handleUnload);
+    pusherInstance.connection.bind('state_change', (states: any) => {
+      console.log('Pusher state changed:', states.previous, '→', states.current);
+    });
 
+    globalPusher = pusherInstance;
+    setPusher(pusherInstance);
+
+    // Cleanup on unmount
     return () => {
-      window.removeEventListener('beforeunload', handleUnload);
+      // Don't disconnect on unmount to keep connection alive across page navigations
+      // pusherInstance.disconnect();
     };
   }, []);
 
   return (
-    <SocketContext.Provider value={{ socket, isConnected }}>
+    <PusherContext.Provider value={{ pusher, isConnected }}>
       {children}
-    </SocketContext.Provider>
+    </PusherContext.Provider>
   );
+};
+
+// Backward compatibility: export as SocketProvider and useSocket
+export const SocketProvider = PusherProvider;
+export const useSocket = () => {
+  const { pusher, isConnected } = usePusherContext();
+  return { socket: pusher, isConnected };
 };

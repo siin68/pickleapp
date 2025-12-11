@@ -85,9 +85,8 @@ export async function PUT(
       );
     }
 
-    // Check if event exists and get current host
     const existingEvent = await prisma.event.findUnique({
-      where: { id: eventId },
+      where: { id: parseInt(eventId) },
       select: { hostId: true },
     });
 
@@ -142,11 +141,9 @@ export async function PUT(
       }
     }
 
-    // Update event with transaction
     const updatedEvent = await prisma.$transaction(async (prisma) => {
-      // Update the event
       const event = await prisma.event.update({
-        where: { id: eventId },
+        where: { id: parseInt(eventId) },
         data: {
           ...(title && { title }),
           ...(description !== undefined && { description }),
@@ -172,26 +169,22 @@ export async function PUT(
         },
       });
 
-      // Update hobbies if provided
       if (hobbyIds && Array.isArray(hobbyIds)) {
-        // Delete existing hobby associations
         await prisma.eventHobby.deleteMany({
-          where: { eventId },
+          where: { eventId: parseInt(eventId) },
         });
 
-        // Create new hobby associations
         await prisma.eventHobby.createMany({
           data: hobbyIds.map((hobbyId: string, index: number) => ({
-            eventId,
-            hobbyId,
+            eventId: parseInt(eventId),
+            hobbyId: parseInt(hobbyId),
             isPrimary: index === 0, // First hobby is primary
           })),
         });
       }
 
-      // Fetch complete event with hobbies
       return await prisma.event.findUnique({
-        where: { id: eventId },
+        where: { id: parseInt(eventId) },
         include: {
           host: {
             select: { id: true, name: true, image: true },
@@ -263,37 +256,18 @@ export async function DELETE(
       );
     }
 
-    // Delete event with transaction (cascade delete will handle related records)
     await prisma.$transaction(async (tx) => {
       
-      // Set parentEventId to null for all sub-events instead of deleting them
-      try {
-        const updatedSubEvents = await tx.event.updateMany({
-          where: { parentEventId: eventId },
-          data: { parentEventId: null },
-        });
-      } catch (error) {
-      }
 
-      // Delete event hobbies
       await tx.eventHobby.deleteMany({
         where: { eventId },
       });
 
-      // Delete event participants
       await tx.eventParticipant.deleteMany({
         where: { eventId },
       });
 
-      try {
-        await tx.joinRequest.deleteMany({
-          where: { eventId },
-        });
-      } catch (error) {
-        console.log('Join requests deletion skipped:', error);
-      }
 
-      // Delete event chats and their messages
       const eventChats = await tx.chat.findMany({
         where: { eventId },
         select: { id: true },
@@ -310,7 +284,6 @@ export async function DELETE(
         where: { eventId },
       });
 
-      // Delete the event
       await tx.event.delete({
         where: { id: eventId },
       });

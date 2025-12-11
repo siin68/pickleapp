@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { useRouter } from '@/i18n/navigation';
 import { useSession } from 'next-auth/react';
-import { useSocket } from '@/contexts/SocketContext';
+import { usePusherContext } from '@/contexts/SocketContext';
 import { Button, Avatar, AvatarImage, AvatarFallback } from '@/components/ui';
 import { ArrowLeft, Send, Paperclip, Info, Users, ChevronDown, MoreVertical, Phone, Video, Calendar, Plus, Clock } from 'lucide-react';
 
@@ -47,7 +47,7 @@ export default function ChatPage() {
   const params = useParams();
   const router = useRouter();
   const { data: session } = useSession();
-  const { socket, isConnected } = useSocket();
+  const { pusher, isConnected } = usePusherContext();
   
   const [chat, setChat] = useState<ChatData | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -138,10 +138,11 @@ export default function ChatPage() {
   }, [message]);
 
   useEffect(() => {
-    if (!socket || !isConnected || !params?.id) return;
+    if (!pusher || !isConnected || !params?.id) return;
 
     const chatId = params.id as string;
-    socket.emit('join-chat', chatId);
+    const channelName = `private-chat-${chatId}`;
+    const channel = pusher.subscribe(channelName);
 
     const handleNewMessage = (data: { chatId: string; senderId?: number; message: Message }) => {
       const isOwnMessage = data.senderId?.toString() === session?.user?.id?.toString();
@@ -165,13 +166,13 @@ export default function ChatPage() {
       }
     };
 
-    socket.on('new-message', handleNewMessage);
+    channel.bind('new-message', handleNewMessage);
 
     return () => {
-      socket.emit('leave-chat', chatId);
-      socket.off('new-message', handleNewMessage);
+      channel.unbind('new-message', handleNewMessage);
+      pusher.unsubscribe(channelName);
     };
-  }, [socket, isConnected, params?.id, scrollToBottom, session?.user?.id]);
+  }, [pusher, isConnected, params?.id, scrollToBottom, session?.user?.id]);
 
   const handleSend = async () => {
     if (!message.trim() || !params?.id || sending) return;

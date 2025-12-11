@@ -216,7 +216,7 @@ export async function POST(
 
     // Emit real-time notifications via Socket.IO
     try {
-      const { socketEmit } = await import('@/lib/socket');
+      const { socketEmit } = await import('@/lib/pusher');
       
       await socketEmit.toUser(joinRequest.userId.toString(), 'notification', {
         id: result.notification.id,

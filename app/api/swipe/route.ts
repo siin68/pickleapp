@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { socketEmit } from "@/lib/socket";
+import { socketEmit } from "@/lib/pusher";
 
 export async function POST(request: NextRequest) {
   try {

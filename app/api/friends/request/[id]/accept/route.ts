@@ -26,7 +26,7 @@ export async function POST(
 
     // Get friend request
     const friendRequest = await prisma.friendRequest.findUnique({
-      where: { id: requestId },
+      where: { id: parseInt(requestId) },
       include: {
         sender: {
           select: { id: true, name: true, image: true },
@@ -61,7 +61,7 @@ export async function POST(
 
     // Update friend request status
     await prisma.friendRequest.update({
-      where: { id: requestId },
+      where: { id: parseInt(requestId) },
       data: {
         status: 'ACCEPTED',
         respondedAt: new Date(),
@@ -95,10 +95,10 @@ export async function POST(
 
     // Emit real-time notification via Socket.IO
     try {
-      const { socketEmit } = await import('@/lib/socket');
+      const { socketEmit } = await import('@/lib/pusher');
 
       // Notify sender that request was accepted
-      socketEmit.toUser(friendRequest.senderId, 'notification', {
+      socketEmit.toUser(String(friendRequest.senderId), 'notification', {
         id: notification.id,
         type: 'FRIEND_REQUEST_ACCEPTED',
         title: notification.title,
@@ -114,7 +114,7 @@ export async function POST(
       });
 
       // Emit friend-request-accepted event
-      socketEmit.toUser(friendRequest.senderId, 'friend-request-accepted', {
+      socketEmit.toUser(String(friendRequest.senderId), 'friend-request-accepted', {
         friendRequestId: requestId,
         friendship: {
           id: friendship.id,

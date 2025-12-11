@@ -2,8 +2,9 @@ import prisma from "../../prisma";
 
 export const chatQueries = {
   async getUserChats(userId: string) {
+    const userIdNum = parseInt(userId, 10);
     return prisma.chatParticipant.findMany({
-      where: { userId },
+      where: { userId: userIdNum },
       include: {
         chat: {
           include: {
@@ -11,7 +12,7 @@ export const chatQueries = {
               select: { title: true, date: true },
             },
             participants: {
-              where: { userId: { not: userId } },
+              where: { userId: { not: userIdNum } },
               include: {
                 user: { select: { name: true, image: true } },
               },
@@ -67,11 +68,11 @@ export const chatQueries = {
   ) {
     const chat = await prisma.chat.create({
       data: {
-        eventId,
+        eventId: eventId ? parseInt(eventId, 10) : null,
         type,
         participants: {
-          create: participants.map((userId, index) => ({
-            userId,
+          create: participants.map((participantId, index) => ({
+            userId: parseInt(participantId, 10),
             role: index === 0 ? "OWNER" : "MEMBER",
           })),
         },
@@ -130,9 +131,11 @@ export const chatQueries = {
 
   // Mark messages as read
   async markAsRead(chatId: string, userId: string) {
+    const chatIdNum = parseInt(chatId, 10);
+    const userIdNum = parseInt(userId, 10);
     return prisma.chatParticipant.update({
       where: {
-        chatId_userId: { chatId, userId },
+        chatId_userId: { chatId: chatIdNum, userId: userIdNum },
       },
       data: {
         lastReadAt: new Date(),

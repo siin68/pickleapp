@@ -12,7 +12,7 @@ import {
   Button,
 } from "@/components/ui";
 import { useSession } from "next-auth/react";
-import { useSocket } from "@/contexts/SocketContext";
+import { usePusherContext } from "@/contexts/SocketContext";
 
 // Icons
 const MessageCircleIcon = ({ className }: { className?: string }) => (
@@ -176,14 +176,14 @@ export default function MessagesPage() {
     fetchChats();
   }, [session?.user?.id]);
 
-  // Socket listener for real-time chat updates
-  const { socket, isConnected } = useSocket();
+  // Pusher listener for real-time chat updates
+  const { pusher, isConnected } = usePusherContext();
   
   useEffect(() => {
-    if (!socket || !isConnected || !session?.user?.id) return;
+    if (!pusher || !isConnected || !session?.user?.id) return;
 
-    // Join user's personal room to receive all chat updates
-    socket.emit('join', session.user.id.toString());
+    const channelName = `private-user-${session.user.id}`;
+    const channel = pusher.subscribe(channelName);
 
     const handleNewMessage = (data: { chatId: string; message: any }) => {
       setChats(prevChats => {
@@ -218,12 +218,13 @@ export default function MessagesPage() {
       });
     };
 
-    socket.on('new-message', handleNewMessage);
+    channel.bind('new-message', handleNewMessage);
 
     return () => {
-      socket.off('new-message', handleNewMessage);
+      channel.unbind('new-message', handleNewMessage);
+      // Don't unsubscribe as SocketListener manages the subscription
     };
-  }, [socket, isConnected, session?.user?.id]);
+  }, [pusher, isConnected, session?.user?.id]);
 
   // Fetch friends
   useEffect(() => {
