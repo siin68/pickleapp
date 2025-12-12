@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { useRouter } from '@/i18n/navigation';
 import { useSession } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
 import { usePusherContext } from '@/contexts/SocketContext';
 import { Button, Avatar, AvatarImage, AvatarFallback } from '@/components/ui';
 import { ArrowLeft, Send, Paperclip, Info, Users, ChevronDown, MoreVertical, Phone, Video, Calendar, Plus, Clock } from 'lucide-react';
@@ -48,6 +49,7 @@ export default function ChatPage() {
   const router = useRouter();
   const { data: session } = useSession();
   const { pusher, isConnected } = usePusherContext();
+  const t = useTranslations('chat');
   
   const [chat, setChat] = useState<ChatData | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -321,12 +323,12 @@ export default function ChatPage() {
                       {isEventChat ? (
                         <>
                           <Users className="w-3 h-3" />
-                          {chat.participants.length} members
+                          {t('members', { count: chat.participants.length })}
                         </>
                       ) : (
                         <>
                           <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-                          Online
+                          {t('online')}
                         </>
                       )}
                     </p>
@@ -371,7 +373,7 @@ export default function ChatPage() {
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-bold text-slate-800 flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-violet-600" />
-                Cuộc hẹn ({subEvents.filter(subEvent => new Date(subEvent.date) > new Date()).length})
+                {t('appointments')} ({subEvents.filter(subEvent => new Date(subEvent.date) > new Date()).length})
               </h3>
               {chat.event.hostId === session?.user?.id && (
                 <Button
@@ -379,7 +381,7 @@ export default function ChatPage() {
                   className="bg-violet-600 hover:bg-violet-700 text-white rounded-xl px-4 py-2 text-sm font-semibold flex items-center gap-2"
                 >
                   <Plus className="w-4 h-4" />
-                  Tạo hẹn
+                  {t('createAppointment')}
                 </Button>
               )}
             </div>
@@ -387,7 +389,7 @@ export default function ChatPage() {
             {subEvents.filter(subEvent => new Date(subEvent.date) > new Date()).length === 0 ? (
               <div className="text-center py-8 text-slate-400">
                 <Calendar className="w-12 h-12 mx-auto mb-2 opacity-30" />
-                <p className="text-sm">Chưa có cuộc hẹn nào</p>
+                <p className="text-sm">{t('noAppointments')}</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto scrollbar-hide pr-2">
@@ -413,7 +415,7 @@ export default function ChatPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Users className="w-3 h-3 text-violet-500" />
-                        {subEvent.participants?.length || 0}/{subEvent.maxParticipants} người
+                        {subEvent.participants?.length || 0}/{subEvent.maxParticipants} {t('people')}
                       </div>
                     </div>
                   </div>

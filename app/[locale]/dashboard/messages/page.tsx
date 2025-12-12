@@ -290,15 +290,15 @@ export default function MessagesPage() {
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays === 0) return "Today";
-    if (diffDays === 1) return "Yesterday";
-    if (diffDays < 7) return `${diffDays}d ago`;
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
-    return `${Math.floor(diffDays / 30)}mo ago`;
+    if (diffDays === 0) return t("today");
+    if (diffDays === 1) return t("yesterday");
+    if (diffDays < 7) return t("daysAgo", { days: diffDays });
+    if (diffDays < 30) return t("weeksAgo", { weeks: Math.floor(diffDays / 7) });
+    return t("monthsAgo", { months: Math.floor(diffDays / 30) });
   };
 
   const handleUnfriend = async (friendshipId: string, friendName: string) => {
-    if (!confirm(`Bạn có chắc muốn xóa ${friendName} khỏi danh sách bạn bè?`)) {
+    if (!confirm(t("confirmRemoveFriend", { name: friendName }))) {
       return;
     }
 
@@ -313,11 +313,11 @@ export default function MessagesPage() {
         // Remove from local state
         setFriends((prev) => prev.filter((f) => f.friendshipId !== friendshipId));
       } else {
-        alert("Không thể xóa bạn bè. Vui lòng thử lại.");
+        alert(t("couldNotRemove"));
       }
     } catch (error) {
       console.error("Error unfriending:", error);
-      alert("Đã xảy ra lỗi. Vui lòng thử lại.");
+      alert(t("errorOccurred"));
     }
   };
 
@@ -354,12 +354,12 @@ export default function MessagesPage() {
           // Navigate to the chat
           router.push(`chat/${data.data.id}`);
         } else {
-          alert("Không thể tạo cuộc trò chuyện. Vui lòng thử lại.");
+          alert(t("couldNotCreateChat"));
         }
       }
     } catch (error) {
       console.error("Error creating chat:", error);
-      alert("Đã xảy ra lỗi. Vui lòng thử lại.");
+      alert(t("errorOccurred"));
     }
   };
 
@@ -395,12 +395,12 @@ export default function MessagesPage() {
             <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-rose-50 to-purple-50">
               <div className="flex items-center gap-2 mb-1">
                 <UsersIcon className="w-5 h-5 text-purple-600" />
-                <h2 className="text-lg font-black text-gray-900">Friends</h2>
+                <h2 className="text-lg font-black text-gray-900">{t("friends")}</h2>
                 <span className="ml-auto text-xs font-bold text-purple-600 bg-purple-100 px-2 py-1 rounded-full">
                   {friends.length}
                 </span>
               </div>
-              <p className="text-xs text-gray-600">Your mutual matches</p>
+              <p className="text-xs text-gray-600">{t("mutualMatches")}</p>
             </div>
             <div className="overflow-x-auto">
               {friendsLoading ? (
@@ -414,7 +414,7 @@ export default function MessagesPage() {
               ) : friends.length === 0 ? (
                 <div className="p-6 text-center">
                   <div className="text-3xl mb-2">💔</div>
-                  <p className="text-xs text-gray-600">No friends yet</p>
+                  <p className="text-xs text-gray-600">{t("noFriendsYet")}</p>
                 </div>
               ) : (
                 <div className="flex gap-3 p-3 overflow-x-auto snap-x snap-mandatory pb-4">
@@ -442,7 +442,7 @@ export default function MessagesPage() {
                               onClick={() => handleUnfriend(friendship.friendshipId, friend.name)}
                               className="mt-1 text-[10px] text-red-500 hover:text-red-600 font-medium"
                             >
-                              Xóa
+                              {t("remove")}
                             </button>
                           </div>
                         </div>
@@ -459,12 +459,12 @@ export default function MessagesPage() {
             <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-pink-50 to-rose-50">
               <div className="flex items-center gap-2 mb-1">
                 <HeartIcon className="w-5 h-5 text-rose-500" />
-                <h2 className="text-lg font-black text-gray-900">Likes You</h2>
+                <h2 className="text-lg font-black text-gray-900">{t("likesYou")}</h2>
                 <span className="ml-auto text-xs font-bold text-rose-600 bg-rose-100 px-2 py-1 rounded-full">
                   {likesReceived.length}
                 </span>
               </div>
-              <p className="text-xs text-gray-600">People who liked you</p>
+              <p className="text-xs text-gray-600">{t("peopleWhoLiked")}</p>
             </div>
             <div className="overflow-x-auto">
               {likesLoading ? (
@@ -478,7 +478,7 @@ export default function MessagesPage() {
               ) : likesReceived.length === 0 ? (
                 <div className="p-6 text-center">
                   <div className="text-3xl mb-2">💝</div>
-                  <p className="text-xs text-gray-600">No likes yet</p>
+                  <p className="text-xs text-gray-600">{t("noLikesYet")}</p>
                 </div>
               ) : (
                 <div className="flex gap-3 p-3 overflow-x-auto snap-x snap-mandatory pb-4">
@@ -517,9 +517,9 @@ export default function MessagesPage() {
             <div className="mb-4">
               <div className="flex items-center gap-2 mb-2">
                 <MessageCircleIcon className="w-6 h-6 text-purple-600" />
-                <h1 className="text-2xl font-black text-gray-900">Messages</h1>
+                <h1 className="text-2xl font-black text-gray-900">{t("title")}</h1>
               </div>
-              <p className="text-sm text-gray-600">Your conversations from events</p>
+              <p className="text-sm text-gray-600">{t("conversationsFromEvents")}</p>
             </div>
             <div className="space-y-3">
               {loading ? (
@@ -541,13 +541,13 @@ export default function MessagesPage() {
                   <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-xl shadow-rose-100 mb-4">
                     <MessageCircleIcon className="w-8 h-8 text-rose-400" />
                   </div>
-                  <h3 className="text-lg font-black text-gray-800 mb-2">No conversations yet</h3>
-                  <p className="text-gray-500 mb-6 text-sm">Join an event to start chatting!</p>
+                  <h3 className="text-lg font-black text-gray-800 mb-2">{t("noConversations")}</h3>
+                  <p className="text-gray-500 mb-6 text-sm">{t("joinEventToChat")}</p>
                   <Button
                     onClick={() => router.push("/dashboard/open-invites")}
                     className="rounded-full px-6 bg-gray-900 text-white font-bold"
                   >
-                    Find Events
+                    {t("findEvents")}
                   </Button>
                 </div>
               ) : (
@@ -597,7 +597,7 @@ export default function MessagesPage() {
                           <div className="flex-1 min-w-0">
                             <div className="flex justify-between items-start mb-1">
                               <h3 className="font-bold text-gray-800 group-hover:text-primary-600 transition">
-                                {chat.event?.title || otherParticipant?.name || "Direct Message"}
+                                {chat.event?.title || otherParticipant?.name || t("directMessage")}
                               </h3>
                               <span className="text-xs text-gray-400 ml-2">
                                 {formatTimestamp(chat.lastMessage?.timestamp)}
@@ -605,10 +605,10 @@ export default function MessagesPage() {
                             </div>
                             <p className="text-sm text-gray-500 mb-1">
                               {isEventChat 
-                                ? `👥 ${chat.participants.length} members` 
-                                : `💬 with ${otherParticipant?.name || "Unknown User"}`}
+                                ? `👥 ${chat.participants.length} ${t("members")}` 
+                                : `💬 ${t("with")} ${otherParticipant?.name || t("unknownUser")}`}
                             </p>
-                            <p className="text-sm text-gray-600 truncate">{chat.lastMessage?.content || "No messages yet"}</p>
+                            <p className="text-sm text-gray-600 truncate">{chat.lastMessage?.content || t("noMessagesYet")}</p>
                           </div>
                         </div>
                       </CardContent>
@@ -628,12 +628,12 @@ export default function MessagesPage() {
               <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-rose-50 to-purple-50">
                 <div className="flex items-center gap-2 mb-1">
                   <UsersIcon className="w-5 h-5 text-purple-600" />
-                  <h2 className="text-lg font-black text-gray-900">Friends</h2>
+                  <h2 className="text-lg font-black text-gray-900">{t("friends")}</h2>
                   <span className="ml-auto text-xs font-bold text-purple-600 bg-purple-100 px-2 py-1 rounded-full">
                     {friends.length}
                   </span>
                 </div>
-                <p className="text-xs text-gray-600">Your mutual matches</p>
+                <p className="text-xs text-gray-600">{t("mutualMatches")}</p>
               </div>
 
               <div className="overflow-x-auto lg:overflow-x-hidden lg:overflow-y-auto lg:max-h-[calc(100vh-220px)]">
@@ -653,14 +653,14 @@ export default function MessagesPage() {
                   <div className="p-8 text-center">
                     <div className="text-4xl mb-3">💔</div>
                     <p className="text-sm text-gray-600 mb-4">
-                      No friends yet
+                      {t("noFriendsYet")}
                     </p>
                     <Button
                       onClick={() => router.push("/dashboard/hobby-match")}
                       className="bg-gradient-to-r from-rose-500 to-purple-600 text-white text-xs px-4 py-2 rounded-full font-semibold"
                     >
                       <HeartIcon className="w-4 h-4 mr-1" />
-                      Find Matches
+                      {t("findMatches")}
                     </Button>
                   </div>
                 ) : (
@@ -697,7 +697,7 @@ export default function MessagesPage() {
                                 onClick={() => handleUnfriend(friendship.friendshipId, friend.name)}
                                 className="mt-1 text-[10px] text-red-500 hover:text-red-600 font-medium"
                               >
-                                Xóa
+                                {t("remove")}
                               </button>
                             </div>
                           </div>
@@ -737,7 +737,7 @@ export default function MessagesPage() {
                                   handleChatWithFriend(friend.id);
                                 }}
                                 className="p-2 hover:bg-purple-100 rounded-lg transition-colors"
-                                title="Nhắn tin"
+                                title={t("sendMessage")}
                               >
                                 <MessageCircleIcon className="w-4 h-4 text-purple-600" />
                               </button>
@@ -747,7 +747,7 @@ export default function MessagesPage() {
                                   handleUnfriend(friendship.friendshipId, friend.name);
                                 }}
                                 className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-red-50 rounded-lg"
-                                title="Xóa bạn"
+                                title={t("removeFriend")}
                               >
                                 <TrashIcon className="w-4 h-4 text-red-500" />
                               </button>
@@ -767,10 +767,10 @@ export default function MessagesPage() {
             <div className="mb-4 flex-shrink-0">
               <div className="flex items-center gap-2 mb-2">
                 <MessageCircleIcon className="w-6 h-6 text-purple-600" />
-                <h1 className="text-2xl font-black text-gray-900">Messages</h1>
+                <h1 className="text-2xl font-black text-gray-900">{t("title")}</h1>
               </div>
               <p className="text-sm text-gray-600">
-                Your conversations from events
+                {t("conversationsFromEvents")}
               </p>
             </div>
 
@@ -842,7 +842,7 @@ export default function MessagesPage() {
                             <div className="flex-1 min-w-0">
                               <div className="flex justify-between items-start mb-1">
                                 <h3 className="font-bold text-gray-800 group-hover:text-primary-600 transition">
-                                  {chat.event?.title || otherParticipant?.name || "Direct Message"}
+                                  {chat.event?.title || otherParticipant?.name || t("directMessage")}
                                 </h3>
                                 <span className="text-xs text-gray-400 ml-2">
                                   {formatTimestamp(chat.lastMessage?.timestamp)}
@@ -850,11 +850,11 @@ export default function MessagesPage() {
                               </div>
                               <p className="text-sm text-gray-500 mb-1">
                                 {isEventChat 
-                                  ? `👥 ${chat.participants.length} members` 
-                                  : `💬 with ${otherParticipant?.name || "Unknown User"}`}
+                                  ? `👥 ${chat.participants.length} ${t("members")}` 
+                                  : `💬 ${t("with")} ${otherParticipant?.name || t("unknownUser")}`}
                               </p>
                               <p className="text-sm text-gray-600 truncate">
-                                {chat.lastMessage?.content || "No messages yet"}
+                                {chat.lastMessage?.content || t("noMessagesYet")}
                               </p>
                             </div>
                           </div>
@@ -870,16 +870,16 @@ export default function MessagesPage() {
                   <MessageCircleIcon className="w-10 h-10 text-rose-400" />
                 </div>
                 <h3 className="text-xl font-black text-gray-800 mb-2">
-                  No conversations yet
+                  {t("noConversations")}
                 </h3>
                 <p className="text-gray-500 mb-8 max-w-sm">
-                  Join an event to start chatting with your squad!
+                  {t("joinEventToStartChatting")}
                 </p>
                 <Button
                   onClick={() => router.push("/dashboard/open-invites")}
                   className="rounded-full h-12 px-8 bg-gray-900 text-white font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
                 >
-                  Find Events
+                  {t("findEvents")}
                 </Button>
               </div>
             )}
@@ -891,12 +891,12 @@ export default function MessagesPage() {
               <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-pink-50 to-rose-50">
                 <div className="flex items-center gap-2 mb-1">
                   <HeartIcon className="w-5 h-5 text-rose-500" />
-                  <h2 className="text-lg font-black text-gray-900">Likes You</h2>
+                  <h2 className="text-lg font-black text-gray-900">{t("likesYou")}</h2>
                   <span className="ml-auto text-xs font-bold text-rose-600 bg-rose-100 px-2 py-1 rounded-full">
                     {likesReceived.length}
                   </span>
                 </div>
-                <p className="text-xs text-gray-600">People who liked you</p>
+                <p className="text-xs text-gray-600">{t("peopleWhoLiked")}</p>
               </div>
 
               <div className="overflow-y-auto max-h-[calc(100vh-220px)] p-4">
@@ -914,9 +914,9 @@ export default function MessagesPage() {
                   // Empty state
                   <div className="text-center py-12">
                     <div className="text-5xl mb-3">💝</div>
-                    <p className="text-sm text-gray-600 mb-2">No likes yet</p>
+                    <p className="text-sm text-gray-600 mb-2">{t("noLikesYet")}</p>
                     <p className="text-xs text-gray-500">
-                      Start swiping to get likes!
+                      {t("startSwipingToGetLikes")}
                     </p>
                   </div>
                 ) : (

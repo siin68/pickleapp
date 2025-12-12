@@ -18,7 +18,16 @@ export default function LandingPage() {
   const router = useRouter();
 
   // Decorative tags for the hero animation
-  const tags = ['Coffee ☕', 'Hiking 🌲', 'Gaming 🎮', 'Art 🎨', 'Music 🎵', 'Yoga 🧘‍♀️', 'Tech 💻', 'Foodie 🍔'];
+  const tags = [
+    t('hero.tags.coffee'),
+    t('hero.tags.hiking'),
+    t('hero.tags.gaming'),
+    t('hero.tags.art'),
+    t('hero.tags.music'),
+    t('hero.tags.yoga'),
+    t('hero.tags.tech'),
+    t('hero.tags.foodie')
+  ];
 
   return (
     <div className="min-h-screen bg-white relative overflow-x-hidden selection:bg-rose-200 selection:text-rose-900 font-sans">
@@ -42,9 +51,9 @@ export default function LandingPage() {
             </div>
             
             <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-600">
-              <a href="#features" className="hover:text-rose-500 transition-colors">Features</a>
-              <a href="#stories" className="hover:text-rose-500 transition-colors">Stories</a>
-              <a href="#safety" className="hover:text-rose-500 transition-colors">Safety</a>
+              <a href="#features" className="hover:text-rose-500 transition-colors">{t('nav.features')}</a>
+              <a href="#stories" className="hover:text-rose-500 transition-colors">{t('nav.stories')}</a>
+              <a href="#safety" className="hover:text-rose-500 transition-colors">{t('nav.safety')}</a>
             </nav>
 
             {session ? (
@@ -52,7 +61,7 @@ export default function LandingPage() {
                 onClick={() => router.push('/dashboard')}
                 className="rounded-full bg-gradient-to-r from-rose-500 to-purple-600 text-white hover:from-rose-600 hover:to-purple-700 px-6 font-bold shadow-lg shadow-rose-200/50 transition-all hover:scale-105 active:scale-95"
               >
-                Open App
+                {t('openApp')}
               </Button>
             ) : (
               <Link href="/login">
@@ -71,30 +80,26 @@ export default function LandingPage() {
           <div className="text-center lg:text-left space-y-8 relative z-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-100 text-rose-600 text-xs font-bold uppercase tracking-wider mb-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
               <SparkleIcon className="w-3 h-3" />
-              <span>The #1 Vibe-Based Dating App</span>
+              <span>{t('vibeBasedApp')}</span>
             </div>
             
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-gray-900 leading-[1.1]">
-              Match on <br/>
+              {t('heroTitle1')} <br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 via-purple-600 to-indigo-600 animate-gradient-x">
-                Energy,
-              </span> Not Just Looks.
+                {t('heroTitle2')}
+              </span> {t('heroTitle3')}
             </h1>
             
             <p className="text-xl text-gray-500 font-medium max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              {t('subtitle')} Stop swiping on faces. Start connecting with real people who love what you love.
+              {t('subtitle')}
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
               {session ? (
-                <Button 
-                  size="lg" 
-                  onClick={() => router.push('/dashboard')}
-                  className="h-14 px-8 rounded-full text-lg bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 shadow-xl shadow-rose-200 hover:shadow-rose-300 transition-all hover:-translate-y-1"
-                >
-                  Open App →
-                </Button>
-              ) : (
+                  <Button size="lg" onClick={() => router.push('/dashboard')} className="h-14 px-8 rounded-full text-lg bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 shadow-xl shadow-rose-200 hover:shadow-rose-300 transition-all hover:-translate-y-1">
+                    {t('openApp')} →
+                  </Button>
+                ) : (
                 <Link href="/login">
                   <Button size="lg" className="h-14 px-8 rounded-full text-lg bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 shadow-xl shadow-rose-200 hover:shadow-rose-300 transition-all hover:-translate-y-1">
                     {t('cta')}
@@ -102,7 +107,7 @@ export default function LandingPage() {
                 </Link>
               )}
               <Button variant="ghost" className="h-14 px-8 rounded-full text-lg font-semibold text-gray-600 hover:bg-gray-100/50">
-                How it works
+                {t('howItWorks')}
               </Button>
             </div>
 
@@ -114,7 +119,7 @@ export default function LandingPage() {
                    </div>
                  ))}
               </div>
-              <p>Join 10,000+ early adopters</p>
+              <p>{t('joinEarlyAdopters')}</p>
             </div>
           </div>
 
@@ -126,7 +131,7 @@ export default function LandingPage() {
                    <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&q=80&w=400" alt="Profile" className="object-cover w-full h-full" />
                    <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/60 to-transparent text-white">
                       <h3 className="font-bold text-lg">Sarah, 24</h3>
-                      <p className="text-xs opacity-90">📍 2km away</p>
+                      <p className="text-xs opacity-90">📍 {t('hero.kmAway')}</p>
                    </div>
                 </div>
                 <div className="flex gap-2">
@@ -145,8 +150,8 @@ export default function LandingPage() {
                       <ChatIcon className="w-5 h-5" />
                    </div>
                    <div>
-                      <p className="text-xs font-bold text-gray-400">New Message</p>
-                      <p className="text-sm font-bold text-gray-800">Coffee this weekend? ☕</p>
+                      <p className="text-xs font-bold text-gray-400">{t('hero.newMessage')}</p>
+                      <p className="text-sm font-bold text-gray-800">{t('hero.coffeeWeekend')}</p>
                    </div>
                 </div>
                 <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
@@ -186,10 +191,10 @@ export default function LandingPage() {
          <div className="max-w-6xl mx-auto space-y-16">
             <div className="text-center max-w-2xl mx-auto space-y-4">
                <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tight">
-                 Why RND is <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-purple-600">Different</span>
+                 {t('whyDifferent')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-purple-600">{t('different')}</span>
                </h2>
                <p className="text-lg text-gray-500">
-                 Weve redesigned dating from the ground up to focus on what actually matters: shared experiences.
+                 {t('whyDifferentDesc')}
                </p>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
@@ -200,7 +205,7 @@ export default function LandingPage() {
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-3 relative z-10">{t('features.hobby')}</h3>
                   <p className="text-gray-500 leading-relaxed relative z-10">
-                    {t('features.hobbyDesc')} Find your running partner, your gaming squad, or your art gallery date instantly.
+                    {t('features.hobbyDesc')}
                   </p>
                </div>
                <div className="group bg-white p-8 rounded-[2.5rem] shadow-xl shadow-gray-100 border border-gray-100 hover:shadow-2xl hover:shadow-purple-100/50 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
@@ -210,7 +215,7 @@ export default function LandingPage() {
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-3 relative z-10">{t('features.location')}</h3>
                   <p className="text-gray-500 leading-relaxed relative z-10">
-                    {t('features.locationDesc')} Discover events happening right now in your neighborhood. Real life, real time.
+                    {t('features.locationDesc')}
                   </p>
                </div>
                <div className="group bg-white p-8 rounded-[2.5rem] shadow-xl shadow-gray-100 border border-gray-100 hover:shadow-2xl hover:shadow-indigo-100/50 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
@@ -220,7 +225,7 @@ export default function LandingPage() {
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-3 relative z-10">{t('features.chat')}</h3>
                   <p className="text-gray-500 leading-relaxed relative z-10">
-                    {t('features.chatDesc')} Break the ice easily with shared context. No more awkward Hey messages.
+                    {t('features.chatDesc')}
                   </p>
                </div>
             </div>
@@ -233,11 +238,10 @@ export default function LandingPage() {
            
            <div className="relative z-10 space-y-8">
              <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight">
-               Ready to find your <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-purple-400">Person?</span>
+               {t('readyToFind')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-purple-400">{t('person')}</span>
              </h2>
              <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-               Join thousands of others who are done with swiping and ready for doing. 
-               Your next adventure starts here.
+               {t('readyToFindDesc')}
              </p>
              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
                {session ? (
@@ -246,17 +250,17 @@ export default function LandingPage() {
                    onClick={() => router.push('/dashboard')}
                    className="w-full sm:w-auto h-16 px-10 rounded-full text-xl font-bold bg-white text-gray-900 hover:bg-gray-100"
                  >
-                   Open App →
+                   {t('openApp')} →
                  </Button>
                ) : (
                  <Link href="/login">
                     <Button size="lg" className="w-full sm:w-auto h-16 px-10 rounded-full text-xl font-bold bg-white text-gray-900 hover:bg-gray-100">
-                      Get Started Free
+                      {t('getStartedFree')}
                     </Button>
                  </Link>
                )}
              </div>
-             <p className="text-sm text-gray-500 pt-4">No credit card required • Cancel anytime</p>
+             <p className="text-sm text-gray-500 pt-4">{t('noCreditCard')}</p>
            </div>
         </div>
       </section>
@@ -269,11 +273,11 @@ export default function LandingPage() {
                <span className="font-bold text-gray-900">RND APP</span>
             </div>
             <div className="text-sm text-gray-500">
-               © {new Date().getFullYear()} Date RND App. Crafted with 💖 and code.
+               © {new Date().getFullYear()} Date RND App. {t('footer.craftedWith')}
             </div>
             <div className="flex gap-6">
                <a href="#" className="text-gray-400 hover:text-gray-900 transition-colors"><svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.56v14.88c0 2.52-2.04 4.56-4.56 4.56H4.56C2.04 24 0 21.96 0 19.44V4.56C0 2.04 2.04 0 4.56 0h14.88C21.96 0 24 2.04 24 4.56z"/></svg></a>
-               <a href="#" className="text-gray-400 hover:text-gray-900 transition-colors"><svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 3.25.15 4.77 1.69 4.92 4.92.06 1.27.07 1.65.07 4.85 0 3.2-.01 3.58-.07 4.85-.15 3.25-1.69 4.77-4.92 4.92-1.27.06-1.65.07-4.85.07-3.2 0-3.58-.01-4.85-.07-3.25-.15-4.77-1.69-4.92-4.92-.06-1.27-.07-1.65-.07-4.85 0-3.2.01-3.58.07-4.85.15-3.25 1.69-4.77 4.92-4.92 1.27-.06 1.65-.07 4.85-.07z"/></svg></a>
+               <a href="#" className="text-gray-400 hover:text-gray-900 transition-colors"><svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 3.25.15 4.77 1.69 4.92 4.92.06 1.27.07 1.65.07 4.85 0 3.2-.01 3.58-.07 4.85-.15 3.25-1.69-4.77-4.92-4.92-1.27-.06-1.65-.07-4.85-.07-3.2 0-3.58-.01-4.85-.07-3.25-.15-4.77-1.69-4.92-4.92-.06-1.27-.07-1.65-.07-4.85 0-3.2.01-3.58.07-4.85.15-3.25 1.69-4.77 4.92-4.92 1.27-.06 1.65-.07 4.85-.07z"/></svg></a>
             </div>
          </div>
       </footer>

@@ -3,6 +3,8 @@ import prisma from "@/lib/prisma";
 import { parseId } from "@/lib/utils/id-parser";
 import { calculateDistance } from "@/lib/locationUtils";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);

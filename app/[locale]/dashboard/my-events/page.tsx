@@ -174,13 +174,13 @@ export default function MyEventsPage() {
       <div className="max-w-6xl mx-auto space-y-10">
         <div className="text-center space-y-4">
           <span className="inline-flex items-center gap-1.5 py-1 px-3 rounded-full bg-purple-100/80 text-purple-600 text-xs font-bold tracking-widest uppercase backdrop-blur-sm border border-purple-200">
-            Your Schedule
+            {t("yourSchedule")}
           </span>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-rose-500 to-amber-500 drop-shadow-sm">
             {t("title")}
           </h1>
           <p className="text-gray-500 font-medium text-lg max-w-lg mx-auto">
-            Manage your hosted events and upcoming adventures.
+            {t("subtitle")}
           </p>
         </div>
 
@@ -249,14 +249,14 @@ export default function MyEventsPage() {
                        }
                      `}
                     >
-                      {event.status === "OPEN" ? "Upcoming" : "Past"}
+                      {event.status === "OPEN" ? t("upcoming") : t("past")}
                     </Badge>
                   </div>
 
                   {isHost && (
                     <div className="absolute bottom-4 left-4">
                       <Badge className="bg-amber-300/95 text-amber-900 border-0 px-2 py-1 gap-1 shadow-sm backdrop-blur-md font-bold text-[10px]">
-                        <CrownIcon className="w-3 h-3" /> Host
+                        <CrownIcon className="w-3 h-3" /> {t("host")}
                       </Badge>
                     </div>
                   )}
@@ -276,7 +276,7 @@ export default function MyEventsPage() {
                     </h3>
                     {event.host?.name && (
                       <p className="text-sm text-gray-500 mt-1">
-                        by {event.host.name}
+                        {t("by")} {event.host.name}
                       </p>
                     )}
                   </div>
@@ -288,7 +288,7 @@ export default function MyEventsPage() {
                       </div>
                       <div className="flex flex-col">
                         <span className="font-bold text-gray-800 text-xs uppercase tracking-wide">
-                          Date
+                          {t("date")}
                         </span>
                         <span className="font-medium">
                           {new Date(event.date).toLocaleDateString()}
@@ -302,7 +302,7 @@ export default function MyEventsPage() {
                       </div>
                       <div className="flex flex-col truncate">
                         <span className="font-bold text-gray-800 text-xs uppercase tracking-wide">
-                          Location
+                          {t("location")}
                         </span>
                         <span className="font-medium truncate">
                           {location?.name}
@@ -336,15 +336,15 @@ export default function MyEventsPage() {
             </div>
             <h3 className="text-xl font-black text-gray-800 mb-2">
               {activeTab === "created"
-                ? "No Events Hosted Yet"
+                ? t("noEventsHosted")
                 : activeTab === "joined"
-                ? "No Upcoming Plans"
-                : "History is Clean"}
+                ? t("noUpcomingPlans")
+                : t("historyClean")}
             </h3>
             <p className="text-gray-500 mb-8 max-w-sm">
               {activeTab === "created"
-                ? "Ready to bring people together? Create your first event now!"
-                : "Explore the community and find your next adventure."}
+                ? t("createFirstEventDesc")
+                : t("exploreDesc")}
             </p>
             <Button
               onClick={() =>
@@ -356,7 +356,7 @@ export default function MyEventsPage() {
               }
               className="rounded-full h-12 px-8 bg-gray-900 text-white font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
             >
-              {activeTab === "joined" ? "Browse Events" : "Create Event"}
+              {activeTab === "joined" ? t("browseEvents") : t("createEvent")}
             </Button>
           </div>
         )}
